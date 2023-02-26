@@ -16,10 +16,12 @@ export default function Navbar() {
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
         <>
+          {/* Top-level container for the navbar */}
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+            {/* Inner container for the navbar */}
             <div className="relative flex h-16 items-center justify-between">
+              {/* Mobile menu button*/}
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                {/* Mobile menu button*/}
                 <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
@@ -29,8 +31,9 @@ export default function Navbar() {
                   )}
                 </Disclosure.Button>
               </div>
-
+              {/* Main content of the navbar */}
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                {/* Company logo */}
                 <div className="flex flex-shrink-0 items-center">
                   <img
                     className="block h-8 w-auto lg:hidden"
@@ -43,6 +46,7 @@ export default function Navbar() {
                     alt="Your Company"
                   />
                 </div>
+                {/* Navigation menu */}
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
@@ -65,6 +69,7 @@ export default function Navbar() {
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
+                  {/* Dropdown button */}
                   <div>
                     <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="sr-only">Open user menu</span>
@@ -73,6 +78,7 @@ export default function Navbar() {
               
                     </Menu.Button>
                   </div>
+                  {/* Dropdown menu */}
                   <Transition
                     as={Fragment}
                     enter="transition ease-out duration-100"
@@ -100,8 +106,11 @@ export default function Navbar() {
             </div>
           </div>
 
+          {/* This is the panel that shows up when the screen size is small */}
           <Disclosure.Panel className="sm:hidden">
+            {/* This div contains the navigation links */}
             <div className="space-y-1 px-2 pt-2 pb-3">
+              {/* This is a loop that goes through the navigation array and creates a button for each item */}
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}
@@ -113,6 +122,7 @@ export default function Navbar() {
                   )}
                   aria-current={item.current ? 'page' : undefined}
                 >
+                  {/* This is the name of the item */}
                   {item.name}
                 </Disclosure.Button>
               ))}

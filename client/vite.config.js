@@ -8,8 +8,8 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
-    host: true, // Allows Docker Container port mapping
+    host: '0.0.0.0', // Allows Docker Container port mapping
     strictPort: true,
     port: 5173,
   }
-})
+});

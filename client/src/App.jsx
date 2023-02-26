@@ -9,6 +9,7 @@ function App() {
   return (
     <div className="App">
       <Navbar />
+      <p>Testing 123</p>
       
       <div>
         <a href="https://vitejs.dev" target="_blank">
