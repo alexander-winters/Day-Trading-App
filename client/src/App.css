@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+/* remove the nav menu and .profile button */
+.index-page .nav-menu, .profile-button {
+  display: none;
+}
