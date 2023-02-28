@@ -1,26 +1,29 @@
 const { MongoClient } = require("mongodb");
-const Db = process.env.ATLAS_URI;
-const client = new MongoClient(Db, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
- 
-var _db;
- 
+const url = process.env.ATLAS_URI
+
+let _db;
+
 module.exports = {
-  connectToServer: function (callback) {
-    client.connect(function (err, db) {
-      // Verify we got a good "db" object
-      if (db)
-      {
-        _db = db.db("employees");
-        console.log("Successfully connected to MongoDB."); 
-      }
-      return callback(err);
-         });
+  connectToServer: function () {
+    return new Promise((resolve, reject) => {
+      MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+        .then(client => {
+          _db = client.db();
+          console.log("Connected to MongoDB");
+          resolve();
+        })
+        .catch(err => {
+          console.error("Error connecting to MongoDB", err);
+          reject(err);
+        });
+    });
   },
- 
+
   getDb: function () {
+    if (!_db) {
+      console.warn("Attempted to get database before connecting.");
+      return null;
+    }
     return _db;
-  },
+  }
 };

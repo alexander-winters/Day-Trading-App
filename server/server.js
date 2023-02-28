@@ -8,12 +8,14 @@ app.use(express.json());
 app.use(require("./routes/record"));
 // get driver connection
 const dbo = require("./db/conn");
- 
-app.listen(port, () => {
-  // perform a database connection when server starts
-  dbo.connectToServer(function (err) {
-    if (err) console.error(err);
- 
+
+dbo.connectToServer()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running on port: ${port}`);
+    });
+  })
+  .catch(err => {
+    console.error("Failed to connect to MongoDB", err);
+    process.exit(1);
   });
-  console.log(`Server is running on port: ${port}`);
-});
