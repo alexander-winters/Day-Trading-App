@@ -14,7 +14,42 @@ adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
 session.mount('http://', adapter)
 
 def send_request(transaction_id, params):
-    return None
+    cmd = params[0]
+    args = params[1:]
+
+    if cmd == 'ADD':
+        userid = args[0]
+        amount = args[1]
+
+        body = {
+            'userid': userid,
+            'nextTransactionNum': transaction_id,
+            'amount': float(amount)
+        }
+        URL = API_URI + '/add'
+    elif cmd == 'QUOTE':
+        userid = args[0]
+        stockSymbol = args[1]
+
+        body = {
+            'userid': userid,
+            'nextTransactionNum': transaction_id,
+            'StockSymbol': stockSymbol
+        }
+        URL = API_URI + '/quote'
+    elif cmd == 'BUY':
+        userid = args[0]
+        stockSymbol = args[1]
+        amount = args[2]
+
+        body = {
+            'userid': userid,
+            'nextTransactionNum': transaction_id,
+            'StockSymbol': stockSymbol,
+            'amount': float(amount)
+        }
+
+
 
 def process_commands(transactions):
     with ThreadPoolExecutor(max_workers=10) as executor:
@@ -23,9 +58,9 @@ def process_commands(transactions):
         local_session = local()
         futures = []
         for transaction in transactions:
-            transaction_num, params = transaction
+            transaction_id, params = transaction
             futures.append(
-                executor.submit(send_request, transaction_num, params, local_session)
+                executor.submit(send_request, transaction_id, params, local_session)
             )
         # Wait for all requests to complete
         for future in futures:
