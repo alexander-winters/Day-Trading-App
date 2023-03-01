@@ -1,8 +1,20 @@
 import time
 import json
+import os
 import requests
+from requests.sessions import Session
 from threading import local
 from concurrent.futures import ThreadPoolExecutor
+
+API_URI = 'http://localhost:3000'
+
+# Create a session with a connection pool to reuse TCP connections
+session = Session()
+adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
+session.mount('http://', adapter)
+
+def send_request(transaction_id, params):
+    return None
 
 def process_commands(transactions):
     with ThreadPoolExecutor(max_workers=10) as executor:
