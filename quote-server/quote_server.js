@@ -2,12 +2,12 @@ const crypto = require('crypto');
 const base64url = require('base64url')
 const guassian = require('gaussian')
 
-async function get_quote(sym_raw, user) {
+async function get_quote(stock_symbol, user) {
     // Introduce a delay of 3 seconds using setTimeout
     await new Promise(resolve => setTimeout(resolve, 3000));
 
     // Extract the first 3 characters of the symbol
-    let sym = sym_raw.substring(0,3);
+    let sym = stock_symbol.substring(0,3);
 
     // Generate a random value from a Gaussian distribution
     const mu = 0; // mean

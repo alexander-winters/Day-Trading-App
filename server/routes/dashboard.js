@@ -5,23 +5,24 @@ const { get_quote } = require('../../quote-server/quote_server');
 // We use it to define our routes.
 // The router will be added as a middleware and will take control of requests starting with path /dashboard.
 const dashboardRoutes = express.Router();
+let previous_stock_symbol = '';
 
 // 'http://localhost:5000/dashboard?type=quote&symbol=ABC&user=john'
 dashboardRoutes.route('/dashboard').get(async (req, res) => {
     const { type, // Command 
             user, // user_id
-            amount, // Amount to add, buy, or sell.
             stock_symbol,
+            amount, // Amount to add, buy, or sell.
             filename, // Specify dumplog filename
     } = req.query;
     
     console.log( `Type: ${type}, Symbol: ${symbol}, User: ${user}`);
     if (type === 'add') {
         try {
-            // Need to get the current balance from db
-            let currrent_balance = 0;
-            currrent_balance += add_amount;
-            res.json(currrent_balance);
+            // Need to get the current balance from db for user
+            let user_currrent_balance = 0;
+            user_currrent_balance += amount;
+            res.json(user_currrent_balance);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
