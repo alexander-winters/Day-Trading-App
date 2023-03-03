@@ -8,17 +8,116 @@ const dashboardRoutes = express.Router();
 
 // 'http://localhost:5000/dashboard?type=quote&symbol=ABC&user=john'
 dashboardRoutes.route('/dashboard').get(async (req, res) => {
-    const { type, symbol, user } = req.query;
+    const { type, // Command 
+            user, // user_id
+            amount, // Amount to add, buy, or sell.
+            stock_symbol,
+            filename, // Specify dumplog filename
+    } = req.query;
+    
     console.log( `Type: ${type}, Symbol: ${symbol}, User: ${user}`);
-    if (type === 'quote') {
+    if (type === 'add') {
         try {
-            const quote = await get_quote(symbol, user);
+            // Need to get the current balance from db
+            let currrent_balance = 0;
+            currrent_balance += add_amount;
+            res.json(currrent_balance);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'quote') {
+        try {
+            const quote = await get_quote(stock_symbol, user);
             res.json(quote);
         } catch (err) {
-            res.status(500).json({ error: err.message});
+            res.status(500).json({ error: err.message });
         }
-    } // else { } finish to handle other requests for this page
-})
+    } else if (type === 'buy') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'commit_buy') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'cancel_buy') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'sell') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'commit_sell') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'cancel_sell') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'set_buy_amount') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'cancel_set_buy') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'set_buy_trigger') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'set_sell_amount') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'set_sell_trigger') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'cancel_set_sell') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'dumplog') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (type === 'display_summary') {
+        try {
+
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } 
+});
 
 
 module.exports = dashboardRoutes;
