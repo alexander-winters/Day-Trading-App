@@ -4,11 +4,11 @@ async function sell(user, stock_symbol, amount) {
     // Complete
 }
 
-async function commit_sell(user, stock_symbol, amount) {
+async function commit_sell(user) {
     // Complete
 }
 
-async function cancel_sell(user, stock_symbol, amount) {
+async function cancel_sell(user) {
     // Complete
 }
 
