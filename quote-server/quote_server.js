@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const base64url = require('base64url')
 const guassian = require('gaussian')
 
-async function get_quote(stock_symbol, user) {
+async function get_quote(user, stock_symbol) {
     // Introduce a delay of 3 seconds using setTimeout
     await new Promise(resolve => setTimeout(resolve, 3000));
 

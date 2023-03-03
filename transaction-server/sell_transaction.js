@@ -1,4 +1,4 @@
-const get_quote = require("../quote-server/quote_server");
+const { get_quote } = require("../quote-server/quote_server");
 
 async function sell(user, stock_symbol, amount) {
     // Complete
