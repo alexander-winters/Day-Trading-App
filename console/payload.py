@@ -1,6 +1,6 @@
 import time
 import json
-import os
+import sys
 import requests
 from requests.sessions import Session
 from threading import local
@@ -27,6 +27,8 @@ def send_request(transaction_id, params):
             'amount': float(amount)
         }
         URL = API_URI + '/add'
+
+        r = session.post(URL, json=body)
     
     elif cmd == 'QUOTE':
         userid = args[0]
@@ -38,6 +40,8 @@ def send_request(transaction_id, params):
             'StockSymbol': stockSymbol
         }
         URL = API_URI + '/quote'
+
+        r = session.post(URL, json=body)
     
     elif cmd == 'BUY':
         userid = args[0]
@@ -51,6 +55,8 @@ def send_request(transaction_id, params):
             'amount': float(amount)
         }
         URL = API_URI + '/buy'
+        
+        r = session.post(URL, json=body)
     
     elif cmd == 'COMMIT_BUY':
         userid = args[0]
@@ -60,6 +66,8 @@ def send_request(transaction_id, params):
             'nextTransactionNum': transaction_id,
         }
         URL = API_URI + '/commit_buy'
+
+        r = session.post(URL, json=body)
     
     elif cmd == 'CANCEL_BUY':
         userid = args[0]
@@ -69,6 +77,8 @@ def send_request(transaction_id, params):
             'nextTransactionNum': transaction_id,
         }
         URL = API_URI + '/cancel_buy'
+
+        r = session.post(URL, json=body)
     
     elif cmd == 'SELL':
         userid = args[0]
@@ -82,6 +92,8 @@ def send_request(transaction_id, params):
             'amount': float(amount)
         }
         URL = API_URI + '/sell'
+
+        r = session.post(URL, json=body)
     
     elif cmd == 'COMMIT_SELL':
         userid = args[0]
@@ -91,6 +103,8 @@ def send_request(transaction_id, params):
             'nextTransactionNum': transaction_id,
         }
         URL = API_URI + '/commit_sell'
+
+        r = session.post(URL, json=body)
     
     elif cmd == 'CANCEL_SELL':
         userid = args[0]
@@ -100,6 +114,8 @@ def send_request(transaction_id, params):
             'nextTransactionNum': transaction_id,
         }
         URL = API_URI + '/cancel_sell'
+
+        r = session.post(URL, json=body)
     
     elif cmd == 'SET_BUY_AMOUNT':
 
@@ -116,8 +132,8 @@ def send_request(transaction_id, params):
 
         URL = API_URI + '/set_buy_amount'
         
-        r = requests.post(URL, json=body)
-        #session.post(URL, json=body)
+        # r = requests.post(URL, json=body)
+        r = session.post(URL, json=body)
 
     elif cmd == 'CANCEL_SET_BUY':
 
@@ -132,8 +148,8 @@ def send_request(transaction_id, params):
 
         URL = API_URI + '/cancel_set_buy'
         
-        r = requests.post(URL, json=body)
-        #session.post(URL, json=body)
+        # r = requests.post(URL, json=body)
+        r = session.post(URL, json=body)
 
     elif cmd == 'SET_BUY_TRIGGER':
 
@@ -150,8 +166,8 @@ def send_request(transaction_id, params):
 
         URL = API_URI + '/set_buy_trigger'
         
-        r = requests.post(URL, json=body)
-        #session.post(URL, json=body)
+        # r = requests.post(URL, json=body)
+        r = session.post(URL, json=body)
 
     elif cmd == 'SET_SELL_AMOUNT':
 
@@ -168,8 +184,8 @@ def send_request(transaction_id, params):
 
         URL = API_URI + '/set_sell_amount'
         
-        r = requests.post(URL, json=body)
-        #session.post(URL, json=body)
+        # r = requests.post(URL, json=body)
+        r = session.post(URL, json=body)
 
     elif cmd == 'SET_SELL_TRIGGER':
 
@@ -186,8 +202,8 @@ def send_request(transaction_id, params):
 
         URL = API_URI + '/set_sell_trigger'
         
-        r = requests.post(URL, json=body)
-        #session.post(URL, json=body)
+        # r = requests.post(URL, json=body)
+        r = session.post(URL, json=body)
 
     elif cmd == 'CANCEL_SET_SELL':
 
@@ -202,8 +218,8 @@ def send_request(transaction_id, params):
 
         URL = API_URI + '/cancel_set_sell'
         
-        r = requests.post(URL, json=body)
-        #session.post(URL, json=body)
+        # r = requests.post(URL, json=body)
+        r = session.post(URL, json=body)
 
     elif cmd == 'DUMPLOG' and len(args) > 1:
 
@@ -218,8 +234,8 @@ def send_request(transaction_id, params):
 
         URL = API_URI + '/user_dumplog'
         
-        r = requests.post(URL, json=body)
-        #session.post(URL, json=body) 
+        # r = requests.post(URL, json=body)
+        r = session.post(URL, json=body) 
 
     elif cmd == 'DUMPLOG':
 
@@ -231,8 +247,8 @@ def send_request(transaction_id, params):
         }
 
         URL = API_URI + '/dumplog'
-        r = requests.post(URL, json=body)
-        #session.post(URL, json=body)
+        # r = requests.post(URL, json=body)
+        r = session.post(URL, json=body)
      
     elif cmd == 'DISPLAY_SUMMARY':
 
@@ -245,8 +261,8 @@ def send_request(transaction_id, params):
 
         URL = API_URI + '/display_summary'
         
-        r = requests.post(URL, json=body)
-        #session.post(URL, json=body)
+        # r = requests.post(URL, json=body)
+        r = session.post(URL, json=body)
 
 
 
@@ -267,15 +283,26 @@ def process_commands(transactions):
 
 
 def main():
+    if len(sys.argv) < 2:
+        print("You did not specify the name of a file to run. Using default - user1.txt")
+        filename = './payloads/user1.txt'
+    
+    filename = sys.argv[1]
+
     transactions = []
-    with open('commands.json', 'r') as f:
-        data = json.load(f)
-        transactions = data['transactions']
+    with open(filename, 'r') as f:
+        for line in f:
+            transactions.append(line.strip().split(','))
 
     start = time.perf_counter()
     process_commands(transactions)
     elapsed = time.perf_counter() - start
     print(f"Elapsed time: {elapsed:0.2f} seconds")
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps(f'Total Time {elapsed - start:0.2f}')
+    }
 
 if __name__ == '__main__':
     main()
