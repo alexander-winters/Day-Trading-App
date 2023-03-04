@@ -189,6 +189,66 @@ def send_request(transaction_id, params):
         r = requests.post(URL, json=body)
         #session.post(URL, json=body)
 
+    elif cmd == 'CANCEL_SET_SELL':
+
+        userid = args[0]
+        stockSymbol = args[1]
+
+        body = {
+            'userid' : userid,
+            'nextTransactionNum': transaction_id,
+            'StockSymbol' : stockSymbol
+        }
+
+        URL = API_URI + '/cancel_set_sell'
+        
+        r = requests.post(URL, json=body)
+        #session.post(URL, json=body)
+
+    elif cmd == 'DUMPLOG' and len(args) > 1:
+
+        userid = args[0]
+        filename = args[1]
+        
+        body = {
+            'userid' : userid,
+            'nextTransactionNum': transaction_id,
+            'filename' : filename
+        }
+
+        URL = API_URI + '/user_dumplog'
+        
+        r = requests.post(URL, json=body)
+        #session.post(URL, json=body) 
+
+    elif cmd == 'DUMPLOG':
+
+        filename = args[0]
+        
+        body = {
+            'filename' : filename,
+            'nextTransactionNum': transaction_id
+        }
+
+        URL = API_URI + '/dumplog'
+        r = requests.post(URL, json=body)
+        #session.post(URL, json=body)
+     
+    elif cmd == 'DISPLAY_SUMMARY':
+
+        userid = args[0]
+        
+        body = {
+            'userid' : userid,
+            'nextTransactionNum': transaction_id,
+        }
+
+        URL = API_URI + '/display_summary'
+        
+        r = requests.post(URL, json=body)
+        #session.post(URL, json=body)
+
+
 
 def process_commands(transactions):
     with ThreadPoolExecutor(max_workers=10) as executor:
