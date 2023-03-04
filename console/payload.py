@@ -81,8 +81,8 @@ def send_request(transaction_id, params, session):
             'StockSymbol': stockSymbol,
             'amount': float(amount)
         }
-        URL = API_URI + '/sell'
 
+        r = session.post(URL, json=body)
     
     elif cmd == 'COMMIT_SELL':
         userid = args[0]
