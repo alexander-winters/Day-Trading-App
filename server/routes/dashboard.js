@@ -22,13 +22,14 @@ const dashboardRoutes = express.Router();
 let previous_stock_symbol = '';
 
 // 'http://localhost:5000/dashboard?type=quote&user=john&stock_symbol=ABC'
-dashboardRoutes.route('/dashboard').get(async (req, res) => {
+dashboardRoutes.route('/dashboard').post(async (req, res) => {
     const { type, // Command 
             user, // user_id
+            transaction_id,
             stock_symbol,
             amount, // Amount to add, buy, or sell.
             filename, // Specify dumplog filename
-    } = req.query;
+    } = req.body;
 
     // Implement checking if the previous symbol is equal to the requesting symbol
     // This will improve performance
