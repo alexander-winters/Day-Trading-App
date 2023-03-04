@@ -17,35 +17,43 @@ def send_request(transaction_id, params, session):
         amount = args[1]
 
         body = {
+            'type': 'add',
             'userid': userid,
-            'nextTransactionNum': transaction_id,
-            'amount': float(amount)
+            'transaction_id': transaction_id,
+            'stock_symbol': None,
+            'amount': float(amount),
+            'filename': None
         }
 
         r = session.post(URL, json=body)
     
     elif cmd == 'QUOTE':
         userid = args[0]
-        stockSymbol = args[1]
+        stock_symbol = args[1]
 
         body = {
+            'type': 'quote',
             'userid': userid,
-            'nextTransactionNum': transaction_id,
-            'StockSymbol': stockSymbol
+            'transaction_id': transaction_id,
+            'stock_symbol': stock_symbol,
+            'amount': None,
+            'filename': None
         }
 
         r = session.post(URL, json=body)
     
     elif cmd == 'BUY':
         userid = args[0]
-        stockSymbol = args[1]
+        stock_symbol = args[1]
         amount = args[2]
 
         body = {
+            'type': 'buy',
             'userid': userid,
-            'nextTransactionNum': transaction_id,
-            'StockSymbol': stockSymbol,
-            'amount': float(amount)
+            'transaction_id': transaction_id,
+            'stock_symbol': stock_symbol,
+            'amount': float(amount),
+            'filename': None
         }
         
         r = session.post(URL, json=body)
@@ -54,8 +62,12 @@ def send_request(transaction_id, params, session):
         userid = args[0]
 
         body = {
+            'type': 'add',
             'userid': userid,
-            'nextTransactionNum': transaction_id,
+            'transaction_id': transaction_id,
+            'stock_symbol': None,
+            'amount': None,
+            'filename': None
         }
 
         r = session.post(URL, json=body)
@@ -64,32 +76,41 @@ def send_request(transaction_id, params, session):
         userid = args[0]
 
         body = {
+            'type': 'cancel_buy',
             'userid': userid,
-            'nextTransactionNum': transaction_id,
+            'transaction_id': transaction_id,
+            'stock_symbol': None,
+            'amount': None,
+            'filename': None
         }
 
         r = session.post(URL, json=body)
     
     elif cmd == 'SELL':
         userid = args[0]
-        stockSymbol = args[1]
+        stock_symbol = args[1]
         amount = args[2]
 
         body = {
+            'type': 'add',
             'userid': userid,
-            'nextTransactionNum': transaction_id,
-            'StockSymbol': stockSymbol,
-            'amount': float(amount)
+            'transaction_id': transaction_id,
+            'stock_symbol': stock_symbol,
+            'amount': float(amount),
+            'filename': None
         }
-
         r = session.post(URL, json=body)
     
     elif cmd == 'COMMIT_SELL':
         userid = args[0]
 
         body = {
+            'type': 'commit_sell',
             'userid': userid,
-            'nextTransactionNum': transaction_id,
+            'transaction_id': transaction_id,
+            'stock_symbol': None,
+            'amount': None,
+            'filename': None
         }
 
         r = session.post(URL, json=body)
@@ -98,8 +119,12 @@ def send_request(transaction_id, params, session):
         userid = args[0]
 
         body = {
+            'type': 'cancel_sell',
             'userid': userid,
-            'nextTransactionNum': transaction_id,
+            'transaction_id': transaction_id,
+            'stock_symbol': None,
+            'amount': None,
+            'filename': None
         }
 
         r = session.post(URL, json=body)
@@ -107,14 +132,16 @@ def send_request(transaction_id, params, session):
     elif cmd == 'SET_BUY_AMOUNT':
 
         userid = args[0]
-        stockSymbol = args[1]
+        stock_symbol = args[1]
         amount = args[2]
 
         body = {
-            'userid' : userid,
-            'nextTransactionNum': transaction_id,
-            'StockSymbol' : stockSymbol,
-            'amount': float(amount)
+            'type': 'set_buy_amount',
+            'userid': userid,
+            'transaction_id': transaction_id,
+            'stock_symbol': stock_symbol,
+            'amount': float(amount),
+            'filename': None
         }
         
         r = session.post(URL, json=body)
@@ -122,12 +149,15 @@ def send_request(transaction_id, params, session):
     elif cmd == 'CANCEL_SET_BUY':
 
         userid = args[0]
-        stockSymbol = args[1]
+        stock_symbol = args[1]
 
         body = {
-            'userid' : userid,
-            'nextTransactionNum': transaction_id,
-            'StockSymbol': stockSymbol
+            'type': 'cancel_set_buy',
+            'userid': userid,
+            'transaction_id': transaction_id,
+            'stock_symbol': stock_symbol,
+            'amount': None,
+            'filename': None
         }
 
         r = session.post(URL, json=body)
@@ -135,14 +165,16 @@ def send_request(transaction_id, params, session):
     elif cmd == 'SET_BUY_TRIGGER':
 
         userid = args[0]
-        stockSymbol = args[1]
+        stock_symbol = args[1]
         amount = args[2]
 
         body = {
-            'userid' : userid,
-            'nextTransactionNum': transaction_id,
-            'StockSymbol' : stockSymbol,
-            'amount': float(amount)
+            'type': 'set_buy_trigger',
+            'userid': userid,
+            'transaction_id': transaction_id,
+            'stock_symbol': stock_symbol,
+            'amount': float(amount),
+            'filename': None
         }
 
         r = session.post(URL, json=body)
@@ -150,14 +182,16 @@ def send_request(transaction_id, params, session):
     elif cmd == 'SET_SELL_AMOUNT':
 
         userid = args[0]
-        stockSymbol = args[1]
+        stock_symbol = args[1]
         amount = args[2]
 
         body = {
-            'userid' : userid,
-            'nextTransactionNum': transaction_id,
-            'StockSymbol' : stockSymbol,
-            'amount': float(amount)
+            'type': 'set_sell_amount',
+            'userid': userid,
+            'transaction_id': transaction_id,
+            'stock_symbol': stock_symbol,
+            'amount': float(amount),
+            'filename': None
         }
 
         r = session.post(URL, json=body)
@@ -165,14 +199,16 @@ def send_request(transaction_id, params, session):
     elif cmd == 'SET_SELL_TRIGGER':
 
         userid = args[0]
-        stockSymbol = args[1]
+        stock_symbol = args[1]
         amount = args[2]
 
         body = {
-            'userid' : userid,
-            'nextTransactionNum': transaction_id,
-            'StockSymbol' : stockSymbol,
-            'amount': float(amount)
+            'type': 'set_sell_trigger',
+            'userid': userid,
+            'transaction_id': transaction_id,
+            'stock_symbol': stock_symbol,
+            'amount': float(amount),
+            'filename': None
         }
 
         r = session.post(URL, json=body)
@@ -180,12 +216,15 @@ def send_request(transaction_id, params, session):
     elif cmd == 'CANCEL_SET_SELL':
 
         userid = args[0]
-        stockSymbol = args[1]
+        stock_symbol = args[1]
 
         body = {
-            'userid' : userid,
-            'nextTransactionNum': transaction_id,
-            'StockSymbol' : stockSymbol
+            'type': 'cancel_set_sell',
+            'userid': userid,
+            'transaction_id': transaction_id,
+            'stock_symbol': stock_symbol,
+            'amount': None,
+            'filename': None
         }
 
         r = session.post(URL, json=body)
@@ -196,9 +235,12 @@ def send_request(transaction_id, params, session):
         filename = args[1]
         
         body = {
-            'userid' : userid,
-            'nextTransactionNum': transaction_id,
-            'filename' : filename
+            'type': 'dumplog_file',
+            'userid': userid,
+            'transaction_id': transaction_id,
+            'stock_symbol': None,
+            'amount': None,
+            'filename': filename
         }
 
         r = session.post(URL, json=body) 
@@ -208,8 +250,12 @@ def send_request(transaction_id, params, session):
         filename = args[0]
         
         body = {
-            'filename' : filename,
-            'nextTransactionNum': transaction_id
+            'type': 'dumplog',
+            'userid': userid,
+            'transaction_id': transaction_id,
+            'stock_symbol': None,
+            'amount': None,
+            'filename': filename
         }
 
         r = session.post(URL, json=body)
@@ -219,8 +265,12 @@ def send_request(transaction_id, params, session):
         userid = args[0]
         
         body = {
-            'userid' : userid,
-            'nextTransactionNum': transaction_id,
+            'type': 'display_summary',
+            'userid': userid,
+            'transaction_id': transaction_id,
+            'stock_symbol': None,
+            'amount': None,
+            'filename': None
         }
 
         r = session.post(URL, json=body)
