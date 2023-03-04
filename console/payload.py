@@ -6,7 +6,7 @@ from requests.sessions import Session
 from threading import local
 from concurrent.futures import ThreadPoolExecutor
 
-API_URI = 'http://localhost:5000/dashboard'
+URL = 'http://localhost:5000/dashboard'
 
 def send_request(transaction_id, params, session):
     cmd = params[0]
@@ -21,7 +21,6 @@ def send_request(transaction_id, params, session):
             'nextTransactionNum': transaction_id,
             'amount': float(amount)
         }
-        URL = API_URI + '/add'
 
         r = session.post(URL, json=body)
     
@@ -34,7 +33,6 @@ def send_request(transaction_id, params, session):
             'nextTransactionNum': transaction_id,
             'StockSymbol': stockSymbol
         }
-        URL = API_URI + '/quote'
 
         r = session.post(URL, json=body)
     
@@ -49,7 +47,6 @@ def send_request(transaction_id, params, session):
             'StockSymbol': stockSymbol,
             'amount': float(amount)
         }
-        URL = API_URI + '/buy'
         
         r = session.post(URL, json=body)
     
@@ -60,7 +57,6 @@ def send_request(transaction_id, params, session):
             'userid': userid,
             'nextTransactionNum': transaction_id,
         }
-        URL = API_URI + '/commit_buy'
 
         r = session.post(URL, json=body)
     
@@ -71,7 +67,6 @@ def send_request(transaction_id, params, session):
             'userid': userid,
             'nextTransactionNum': transaction_id,
         }
-        URL = API_URI + '/cancel_buy'
 
         r = session.post(URL, json=body)
     
@@ -88,7 +83,6 @@ def send_request(transaction_id, params, session):
         }
         URL = API_URI + '/sell'
 
-        r = session.post(URL, json=body)
     
     elif cmd == 'COMMIT_SELL':
         userid = args[0]
@@ -97,7 +91,6 @@ def send_request(transaction_id, params, session):
             'userid': userid,
             'nextTransactionNum': transaction_id,
         }
-        URL = API_URI + '/commit_sell'
 
         r = session.post(URL, json=body)
     
@@ -108,7 +101,6 @@ def send_request(transaction_id, params, session):
             'userid': userid,
             'nextTransactionNum': transaction_id,
         }
-        URL = API_URI + '/cancel_sell'
 
         r = session.post(URL, json=body)
     
@@ -124,10 +116,7 @@ def send_request(transaction_id, params, session):
             'StockSymbol' : stockSymbol,
             'amount': float(amount)
         }
-
-        URL = API_URI + '/set_buy_amount'
         
-        # r = requests.post(URL, json=body)
         r = session.post(URL, json=body)
 
     elif cmd == 'CANCEL_SET_BUY':
@@ -141,9 +130,6 @@ def send_request(transaction_id, params, session):
             'StockSymbol': stockSymbol
         }
 
-        URL = API_URI + '/cancel_set_buy'
-        
-        # r = requests.post(URL, json=body)
         r = session.post(URL, json=body)
 
     elif cmd == 'SET_BUY_TRIGGER':
@@ -159,9 +145,6 @@ def send_request(transaction_id, params, session):
             'amount': float(amount)
         }
 
-        URL = API_URI + '/set_buy_trigger'
-        
-        # r = requests.post(URL, json=body)
         r = session.post(URL, json=body)
 
     elif cmd == 'SET_SELL_AMOUNT':
@@ -177,9 +160,6 @@ def send_request(transaction_id, params, session):
             'amount': float(amount)
         }
 
-        URL = API_URI + '/set_sell_amount'
-        
-        # r = requests.post(URL, json=body)
         r = session.post(URL, json=body)
 
     elif cmd == 'SET_SELL_TRIGGER':
@@ -195,9 +175,6 @@ def send_request(transaction_id, params, session):
             'amount': float(amount)
         }
 
-        URL = API_URI + '/set_sell_trigger'
-        
-        # r = requests.post(URL, json=body)
         r = session.post(URL, json=body)
 
     elif cmd == 'CANCEL_SET_SELL':
@@ -211,9 +188,6 @@ def send_request(transaction_id, params, session):
             'StockSymbol' : stockSymbol
         }
 
-        URL = API_URI + '/cancel_set_sell'
-        
-        # r = requests.post(URL, json=body)
         r = session.post(URL, json=body)
 
     elif cmd == 'DUMPLOG' and len(args) > 1:
@@ -227,9 +201,6 @@ def send_request(transaction_id, params, session):
             'filename' : filename
         }
 
-        URL = API_URI + '/user_dumplog'
-        
-        # r = requests.post(URL, json=body)
         r = session.post(URL, json=body) 
 
     elif cmd == 'DUMPLOG':
@@ -241,8 +212,6 @@ def send_request(transaction_id, params, session):
             'nextTransactionNum': transaction_id
         }
 
-        URL = API_URI + '/dumplog'
-        # r = requests.post(URL, json=body)
         r = session.post(URL, json=body)
      
     elif cmd == 'DISPLAY_SUMMARY':
@@ -254,9 +223,6 @@ def send_request(transaction_id, params, session):
             'nextTransactionNum': transaction_id,
         }
 
-        URL = API_URI + '/display_summary'
-        
-        # r = requests.post(URL, json=body)
         r = session.post(URL, json=body)
 
 
