@@ -8,12 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 API_URI = 'http://localhost:5000/dashboard'
 
-# Create a session with a connection pool to reuse TCP connections
-session = Session()
-adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
-session.mount('http://', adapter)
-
-def send_request(transaction_id, params):
+def send_request(transaction_id, params, session):
     cmd = params[0]
     args = params[1:]
 
@@ -265,17 +260,28 @@ def send_request(transaction_id, params):
         r = session.post(URL, json=body)
 
 
+def create_session(local_session) -> Session:
+    if not hasattr(local_session, 'session'):
+            local_session.session = Session()
+    return local_session.session
+
 
 def process_commands(transactions):
     with ThreadPoolExecutor(max_workers=10) as executor:
         # Use a local session object for each thread to prevent collisions
         # when accessing the API concurrently
         local_session = local()
+        # Create a session with a connection pool to reuse TCP connections
+        session = create_session(local_session)
+        adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
+        session.mount('http://', adapter)
+        
         futures = []
         for transaction in transactions:
+            print(transaction)
             transaction_id, params = transaction
             futures.append(
-                executor.submit(send_request, transaction_id, params, local_session)
+                executor.submit(send_request, transaction_id, params, session)
             )
         # Wait for all requests to complete
         for future in futures:
@@ -283,16 +289,19 @@ def process_commands(transactions):
 
 
 def main():
-    if len(sys.argv) < 2:
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    else:
         print("You did not specify the name of a file to run. Using default - user1.txt")
         filename = './payloads/user1.txt'
-    
-    filename = sys.argv[1]
 
     transactions = []
     with open(filename, 'r') as f:
         for line in f:
-            transactions.append(line.strip().split(','))
+            transaction_id, params = line.strip().split(' ', 1)
+            transaction_id = transaction_id[1:-1] # Remove square brackets
+            params = params.split(',')
+            transactions.append((transaction_id, params))
 
     start = time.perf_counter()
     process_commands(transactions)
