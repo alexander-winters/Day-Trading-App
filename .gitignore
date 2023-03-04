@@ -24,6 +24,3 @@ transaction-server/test/test-report
 *.njsproj
 *.sln
 *.sw?
-
-# python venv
-/console/dta-venv
