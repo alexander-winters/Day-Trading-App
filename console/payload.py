@@ -153,7 +153,41 @@ def send_request(transaction_id, params):
         r = requests.post(URL, json=body)
         #session.post(URL, json=body)
 
+    elif cmd == 'SET_SELL_AMOUNT':
 
+        userid = args[0]
+        stockSymbol = args[1]
+        amount = args[2]
+
+        body = {
+            'userid' : userid,
+            'nextTransactionNum': transaction_id,
+            'StockSymbol' : stockSymbol,
+            'amount': float(amount)
+        }
+
+        URL = API_URI + '/set_sell_amount'
+        
+        r = requests.post(URL, json=body)
+        #session.post(URL, json=body)
+
+    elif cmd == 'SET_SELL_TRIGGER':
+
+        userid = args[0]
+        stockSymbol = args[1]
+        amount = args[2]
+
+        body = {
+            'userid' : userid,
+            'nextTransactionNum': transaction_id,
+            'StockSymbol' : stockSymbol,
+            'amount': float(amount)
+        }
+
+        URL = API_URI + '/set_sell_trigger'
+        
+        r = requests.post(URL, json=body)
+        #session.post(URL, json=body)
 
 
 def process_commands(transactions):
