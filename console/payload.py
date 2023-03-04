@@ -27,6 +27,7 @@ def send_request(transaction_id, params):
             'amount': float(amount)
         }
         URL = API_URI + '/add'
+    
     elif cmd == 'QUOTE':
         userid = args[0]
         stockSymbol = args[1]
@@ -37,6 +38,7 @@ def send_request(transaction_id, params):
             'StockSymbol': stockSymbol
         }
         URL = API_URI + '/quote'
+    
     elif cmd == 'BUY':
         userid = args[0]
         stockSymbol = args[1]
@@ -49,6 +51,7 @@ def send_request(transaction_id, params):
             'amount': float(amount)
         }
         URL = API_URI + '/buy'
+    
     elif cmd == 'COMMIT_BUY':
         userid = args[0]
 
@@ -57,6 +60,7 @@ def send_request(transaction_id, params):
             'nextTransactionNum': transaction_id,
         }
         URL = API_URI + '/commit_buy'
+    
     elif cmd == 'CANCEL_BUY':
         userid = args[0]
 
@@ -65,6 +69,7 @@ def send_request(transaction_id, params):
             'nextTransactionNum': transaction_id,
         }
         URL = API_URI + '/cancel_buy'
+    
     elif cmd == 'SELL':
         userid = args[0]
         stockSymbol = args[1]
@@ -77,6 +82,7 @@ def send_request(transaction_id, params):
             'amount': float(amount)
         }
         URL = API_URI + '/sell'
+    
     elif cmd == 'COMMIT_SELL':
         userid = args[0]
 
@@ -85,6 +91,7 @@ def send_request(transaction_id, params):
             'nextTransactionNum': transaction_id,
         }
         URL = API_URI + '/commit_sell'
+    
     elif cmd == 'CANCEL_SELL':
         userid = args[0]
 
@@ -93,6 +100,59 @@ def send_request(transaction_id, params):
             'nextTransactionNum': transaction_id,
         }
         URL = API_URI + '/cancel_sell'
+    
+    elif cmd == 'SET_BUY_AMOUNT':
+
+        userid = args[0]
+        stockSymbol = args[1]
+        amount = args[2]
+
+        body = {
+            'userid' : userid,
+            'nextTransactionNum': transaction_id,
+            'StockSymbol' : stockSymbol,
+            'amount': float(amount)
+        }
+
+        URL = API_URI + '/set_buy_amount'
+        
+        r = requests.post(URL, json=body)
+        #session.post(URL, json=body)
+
+    elif cmd == 'CANCEL_SET_BUY':
+
+        userid = args[0]
+        stockSymbol = args[1]
+
+        body = {
+            'userid' : userid,
+            'nextTransactionNum': transaction_id,
+            'StockSymbol': stockSymbol
+        }
+
+        URL = API_URI + '/cancel_set_buy'
+        
+        r = requests.post(URL, json=body)
+        #session.post(URL, json=body)
+
+    elif cmd == 'SET_BUY_TRIGGER':
+
+        userid = args[0]
+        stockSymbol = args[1]
+        amount = args[2]
+
+        body = {
+            'userid' : userid,
+            'nextTransactionNum': transaction_id,
+            'StockSymbol' : stockSymbol,
+            'amount': float(amount)
+        }
+
+        URL = API_URI + '/set_buy_trigger'
+        
+        r = requests.post(URL, json=body)
+        #session.post(URL, json=body)
+
 
 
 
