@@ -65,6 +65,34 @@ def send_request(transaction_id, params):
             'nextTransactionNum': transaction_id,
         }
         URL = API_URI + '/cancel_buy'
+    elif cmd == 'SELL':
+        userid = args[0]
+        stockSymbol = args[1]
+        amount = args[2]
+
+        body = {
+            'userid': userid,
+            'nextTransactionNum': transaction_id,
+            'StockSymbol': stockSymbol,
+            'amount': float(amount)
+        }
+        URL = API_URI + '/sell'
+    elif cmd == 'COMMIT_SELL':
+        userid = args[0]
+
+        body = {
+            'userid': userid,
+            'nextTransactionNum': transaction_id,
+        }
+        URL = API_URI + '/commit_sell'
+    elif cmd == 'CANCEL_SELL':
+        userid = args[0]
+
+        body = {
+            'userid': userid,
+            'nextTransactionNum': transaction_id,
+        }
+        URL = API_URI + '/cancel_sell'
 
 
 
