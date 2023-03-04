@@ -6,7 +6,7 @@ from requests.sessions import Session
 from threading import local
 from concurrent.futures import ThreadPoolExecutor
 
-API_URI = 'http://localhost:3000'
+API_URI = 'http://localhost:3000/dashboard'
 
 # Create a session with a connection pool to reuse TCP connections
 session = Session()
@@ -48,6 +48,23 @@ def send_request(transaction_id, params):
             'StockSymbol': stockSymbol,
             'amount': float(amount)
         }
+        URL = API_URI + '/buy'
+    elif cmd == 'COMMIT_BUY':
+        userid = args[0]
+
+        body = {
+            'userid': userid,
+            'nextTransactionNum': transaction_id,
+        }
+        URL = API_URI + '/commit_buy'
+    elif cmd == 'CANCEL_BUY':
+        userid = args[0]
+
+        body = {
+            'userid': userid,
+            'nextTransactionNum': transaction_id,
+        }
+        URL = API_URI + '/cancel_buy'
 
 
 
