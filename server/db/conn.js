@@ -1,29 +1,16 @@
-const { MongoClient } = require("mongodb");
+const mongoose = require('mongoose');
 const url = process.env.ATLAS_URI
 
-let _db;
-
-module.exports = {
-  connectToServer: function () {
+module.exports = (mongoose) => {
     return new Promise((resolve, reject) => {
-      MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-        .then(client => {
-          _db = client.db();
-          console.log("Connected to MongoDB");
+      mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+        .then(() => {
+          console.log("Connected to MongoDB using Mongoose");
           resolve();
         })
-        .catch(err => {
-          console.error("Error connecting to MongoDB", err);
+        .catch((err) => {
+          console.error("Error connecting to MongoDB using Mongoose", err);
           reject(err);
         });
     });
-  },
-
-  getDb: function () {
-    if (!_db) {
-      console.warn("Attempted to get database before connecting.");
-      return null;
-    }
-    return _db;
-  }
-};
+  };
