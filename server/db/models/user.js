@@ -9,6 +9,7 @@ const user_schema = new mongoose.Schema({
     },
     username: {
        type: String,
+       unique: true,
        required: true 
     },
     member_since: {
