@@ -61,15 +61,16 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
         }
     } else if (type === 'commit_buy') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_commit_buy = await commit_buy(user)
+            res.json(user_commit_buy);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     } else if (type === 'cancel_buy') {
         try {
-            const quote = await get_quote(user, stock_symbol)
-
+            const user_cancel_buy = await cancel_buy(user)
+            res.json(user_cancel_buy);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
@@ -96,21 +97,24 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
         }
     } else if (type === 'set_buy_amount') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_set_buy = await set_buy_amount(user, stock_symbol, amount);
+            res.json(user_set_buy);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     } else if (type === 'cancel_set_buy') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_cancel_set_buy = await cancel_set_buy(user, stock_symbol, amount);
+            res.json(user_cancel_set_buy);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     } else if (type === 'set_buy_trigger') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_set_buy_trigger = await set_buy_trigger(user, stock_symbol, amount);
+            res.json(user_set_buy_trigger);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
