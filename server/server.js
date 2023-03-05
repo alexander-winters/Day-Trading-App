@@ -8,10 +8,10 @@ app.use(cors());
 app.use(express.json());
 app.use(require("./routes/dashboard"));
 // Get Mongoose connection
-const mongoose = require('Mongoose');
+const mongoose = require('mongoose');
 const db = require("./db/conn");
 
-db(connectToServer)
+db(mongoose)
   .then(() => {
     app.listen(port, () => {
       console.log(`Server is running on port: ${port}`);
