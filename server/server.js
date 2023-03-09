@@ -10,17 +10,6 @@ app.use(require("./routes/dashboard"));
 // Get Mongoose connection
 const connectDB = require("./db/conn");
 
-// db(mongoose)
-//   .then(() => {
-//     app.listen(port, () => {
-//       console.log(`Server is running on port: ${port}`);
-//     });
-//   })
-//   .catch((err) => {
-//     console.error("Failed to connect to MongoDB", err);
-//     process.exit(1);
-//   });
-
 connectDB()
   .then(() => {
     app.listen(port, () => {
