@@ -75,21 +75,24 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
         }
     } else if (type === 'sell') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_sell = await sell(user, stock_symbol, amount);
+            res.json(user_sell);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     } else if (type === 'commit_sell') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_commit_sell = await commit_sell(user);
+            res.json(user_commit_sell);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     } else if (type === 'cancel_sell') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_cancel_sell = await cancel_sell(user);
+            res.json(user_cancel_sell);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -117,21 +120,24 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
         }
     } else if (type === 'set_sell_amount') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_set_sell_amount = await set_sell_amount(user, stock_symbol, amount);
+            res.json(user_set_sell_amount);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     } else if (type === 'set_sell_trigger') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_set_sell_trigger = await set_sell_trigger(user, stock_symbol, amount);
+            res.json(user_set_sell_trigger);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     } else if (type === 'cancel_set_sell') {
         try {
-            const quote = await get_quote(user, stock_symbol)
+            const user_cancel_set_sell = await cancel_set_sell(user, stock_symbol, amount);
+            res.json(user_cancel_set_sell);
 
         } catch (err) {
             res.status(500).json({ error: err.message });
