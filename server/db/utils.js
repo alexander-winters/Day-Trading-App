@@ -3,11 +3,11 @@ const User = require('./models/user');
 const Transaction = require('./models/transaction');
 
 async function generate_user_id() {
-    let highest_user = await User.findOne().sort('-user_id');
+    let highest_user = await User.estimatedDocumentCount();
     if (!highest_user) {
         return 1;
     }
-    return highest_user.user_id + 1;
+    return highest_user + 1;
 }
 
 async function generate_transaction_hash(username, transaction_id, transaction_timestamp) {
