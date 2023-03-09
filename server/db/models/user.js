@@ -26,7 +26,7 @@ const user_schema = new mongoose.Schema({
 
 // Use a pre hook to generate a new user_id before a new user to the database
 user_schema.pre('save', async function(next) {
-    const user = this;
+    let user = this;
     if (!user.user_id) {
         user.user_id = await generate_user_id();
     }
