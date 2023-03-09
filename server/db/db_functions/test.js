@@ -1,12 +1,10 @@
 // const { create_user } = require("./user_functions");
 const User = require('../models/user');
-const db  = 
+require("dotenv").config({ path: "../../config.env" });
+const connectDB = require('../conn')
 
-// create_user('alex').then((user) => {
-//     console.log("User added to the database:", user);
-// }).catch((error) => {
-//     console.error('Error adding user to database:', error);
-// });
+connectDB();
+
 async function get_users() {
     const users = await User.find()
     console.log(users);
