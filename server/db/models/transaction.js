@@ -23,9 +23,29 @@ const transaction_schema = new mongoose.Schema( {
         unique: false,
         required: true,
     },
-    command: {
-        type: String,
+    user_request: {
+        type: Object,
+        unqiue: false,
         required: true
     },
-    
+    server_response: {
+        type: Object,
+        unique: false,
+        required: true
+    },
+    transaction_timestamp: {
+        type: Date,
+        unique: false,
+        required: true,
+        default: Date.now()
+    },
+    transaction_expires: {
+        type: Date,
+        unique: false,
+        required: true,
+        default: Date.now() + (60 * 1000) 
+    },
 });
+
+const Transaction = mongoose.model('Transaction', transaction_schema);
+module.exports = Transaction;
