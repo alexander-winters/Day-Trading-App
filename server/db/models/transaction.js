@@ -13,15 +13,15 @@ const transaction_schema = new mongoose.Schema( {
         unique: true,
         required: true
     },
-    transaction_hash: {
-        type: String,
-        unique: true,
-        required: true
-    },
     transaction_id: {
         type: Number,
         unique: false,
         required: true,
+    },
+    transaction_hash: {
+        type: String,
+        unique: true,
+        required: true
     },
     user_request: {
         type: Object,
@@ -48,4 +48,5 @@ const transaction_schema = new mongoose.Schema( {
 });
 
 const Transaction = mongoose.model('Transaction', transaction_schema);
+
 module.exports = Transaction;
