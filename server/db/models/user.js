@@ -22,6 +22,30 @@ const user_schema = new mongoose.Schema({
         required: false,
         default: 0
     },
+    pending_buy: {
+        stock_symbol: {
+            type: String,
+            unique: true,
+            default: undefined
+        },
+        amount: {
+            type: Number,
+            default: 0
+        },
+        quantity: {
+            type: Number,
+            default: 0
+        },
+        expiration_time: {
+            type: Date
+        }
+    },
+    stocks_owned: [
+        {
+            stock_symbol: String,
+            quantity: Number
+        }
+    ]
 });
 
 // Use a pre hook to generate a new user_id before a new user to the database

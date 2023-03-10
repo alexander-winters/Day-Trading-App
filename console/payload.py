@@ -18,7 +18,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'add',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': None,
             'amount': float(amount),
@@ -33,7 +33,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'quote',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,
             'amount': None,
@@ -49,7 +49,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'buy',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,
             'amount': float(amount),
@@ -63,7 +63,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'add',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': None,
             'amount': None,
@@ -77,7 +77,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'cancel_buy',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': None,
             'amount': None,
@@ -93,7 +93,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'add',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,
             'amount': float(amount),
@@ -106,7 +106,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'commit_sell',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': None,
             'amount': None,
@@ -120,7 +120,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'cancel_sell',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': None,
             'amount': None,
@@ -137,7 +137,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'set_buy_amount',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,
             'amount': float(amount),
@@ -153,7 +153,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'cancel_set_buy',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,
             'amount': None,
@@ -170,7 +170,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'set_buy_trigger',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,
             'amount': float(amount),
@@ -187,7 +187,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'set_sell_amount',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,
             'amount': float(amount),
@@ -204,7 +204,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'set_sell_trigger',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,
             'amount': float(amount),
@@ -220,7 +220,7 @@ def send_request(transaction_id, params, session):
 
         body = {
             'type': 'cancel_set_sell',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,
             'amount': None,
@@ -236,7 +236,7 @@ def send_request(transaction_id, params, session):
         
         body = {
             'type': 'dumplog_file',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': None,
             'amount': None,
@@ -251,7 +251,7 @@ def send_request(transaction_id, params, session):
         
         body = {
             'type': 'dumplog',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': None,
             'amount': None,
@@ -266,7 +266,7 @@ def send_request(transaction_id, params, session):
         
         body = {
             'type': 'display_summary',
-            'userid': userid,
+            'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': None,
             'amount': None,
