@@ -1,21 +1,26 @@
 const quote_server = require("../quote-server/quote_server");
+const User = require("../server/db/models/user");
+require("dotenv").config({ path: "../server/config.env" });
+const connectDB = require('../server/db/conn');
 const utils = require("./utils");
 
+connectDB();
 let transaction = utils.initialize_transaction();
 let set_sell_pending;
 
 async function sell(user, stock_symbol, amount) {
     const quote = await quote_server.get_quote(stock_symbol, user);
 
+    const user_acc = await User.findOne({ username: user })
     // Verify user has stocks owned 
-    if ( !user.stocks[stock_symbol] ) {
-        return({error: "No stocks owned"})
-    }
+    // if ( !user.stocks[stock_symbol] ) {
+    //     return({error: "No stocks owned"})
+    // }
 
     // Verify user have enough stocks to sell
-    if (user.stocks[stock_symbol].value < amount) {
-        return({error: "Insufficient stocks to sell"})
-    }
+    // if (user.stocks[stock_symbol].value < amount) {
+    //     return({error: "Insufficient stocks to sell"})
+    // }
 
     const sell_qty = amount/quote.Quoteprice;
 
