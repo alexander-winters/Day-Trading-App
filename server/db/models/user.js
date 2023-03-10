@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
-const { generate_user_id } = require('../utils');
+//const { generate_user_id } = require('../utils');
 
 const user_schema = new mongoose.Schema({
     user_id: {
         type: Number,
         unique: true,
-        required: true
+        required: false,
     },
     username: {
        type: String,
@@ -14,12 +14,12 @@ const user_schema = new mongoose.Schema({
     },
     member_since: {
         type: Date,
-        required: true,
+        required: false,
         default: Date.now
     },
     funds: {
         type: Number,
-        required: true,
+        required: false,
         default: 0
     },
 });
@@ -32,6 +32,14 @@ user_schema.pre('save', async function(next) {
     }
     next();
 });
+
+async function generate_user_id() {
+    let highest_user = await User.estimatedDocumentCount();
+    if (!highest_user) {
+        return 1;
+    }
+    return highest_user + 1;
+}
 
 const User = mongoose.model('User', user_schema);
 

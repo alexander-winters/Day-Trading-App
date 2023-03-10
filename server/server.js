@@ -8,16 +8,14 @@ app.use(cors());
 app.use(express.json());
 app.use(require("./routes/dashboard"));
 // Get Mongoose connection
-const mongoose = require('mongoose');
-const db = require("./db/conn");
+const connectDB = require("./db/conn");
 
-db(mongoose)
+connectDB()
   .then(() => {
     app.listen(port, () => {
       console.log(`Server is running on port: ${port}`);
-    });
-  })
+  });
+})
   .catch((err) => {
-    console.error("Failed to connect to MongoDB", err);
-    process.exit(1);
+    console.error('Failed to connect to MongoDB', err);
   });
