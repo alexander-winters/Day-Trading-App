@@ -7,16 +7,15 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(require("./routes/dashboard"));
-// get driver connection
-const dbo = require("./db/conn");
+// Get Mongoose connection
+const connectDB = require("./db/conn");
 
-dbo.connectToServer()
+connectDB()
   .then(() => {
     app.listen(port, () => {
       console.log(`Server is running on port: ${port}`);
-    });
-  })
-  .catch(err => {
-    console.error("Failed to connect to MongoDB", err);
-    process.exit(1);
+  });
+})
+  .catch((err) => {
+    console.error('Failed to connect to MongoDB', err);
   });
