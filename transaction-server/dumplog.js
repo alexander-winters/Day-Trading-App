@@ -71,6 +71,20 @@ module.exports = async (username, cb) => {
                 }
                 
                 sublog += "</accountTransaction>\n";
+            } else if(log == "system_event"){
+                sublog = `<systemEvent>\n`+
+                            `<timestamp>${result.transaction_timestamp}</timestamp>\n`+
+                            `<server>${result.server}</server>\n`+
+                            `<transactionNum>${result.transaction_id}</transactionNum>\n`+
+                            `<command>${result.user_request.type}</command>\n`
+                
+                // Check if any optional fields are present and add them to the sublog
+                if (result.user_request.userid != null) sublog += `<username>${result.username}</username>\n`;
+                if (result.user_request.stock_symbol != null) sublog += `<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`;
+                if (result.user_request.filename != null) sublog += `<filename>${result.user_request.filename}</filename>\n`;
+                if (result.user_request.amount != null) sublog += `<funds>${result.user_request.amount}</funds>\n`;
+      
+                sublog +="</systemEvent>\n";
             }
         });
 
