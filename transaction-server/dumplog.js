@@ -6,7 +6,7 @@ const fs = require('fs');
 
 connectDB();
 
-module.exports = async (username, cb) => {
+module.exports = async (username) => {
     // Create instance of 'Query' for building queries
     const query = Transaction.find();
     query.collection(Transaction.transactions) // Use the transactions collection
@@ -116,7 +116,10 @@ module.exports = async (username, cb) => {
       
                 sublog += "</debugEvent>\n";
             }
+            fs.appendFileSync('dumplog.xml', sublog);
         });
+        fs.appendFileSync('./dumplog.xml', "</log>");
+        console.log("Dumplog Ready");
 
     } catch (err) {
         // If there is an error we should handle it with a fail safe function

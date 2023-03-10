@@ -28,10 +28,15 @@ const transaction_schema = new mongoose.Schema( {
         unique: false,
         required: true
     },
+    server: {
+        type: String,
+        unique: false,
+        required: true
+    },
     user_request: {
         type: Object,
         unqiue: false,
-        required: true
+        required: false
     },
     server_response: {
         type: Object,
