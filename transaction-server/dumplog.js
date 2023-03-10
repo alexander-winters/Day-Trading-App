@@ -42,6 +42,7 @@ module.exports = async (username) => {
                 `<quoteServerTime>${result.server_response.timestamp}</quoteServerTime>\n` +
                 `<cryptokey>${result.server_response.cryptokey}</cryptokey>\n` +
                 `</quoteServer>\n`;
+
             } else if (log === 'user_command') {
                 // If the logtype is userCommand, create a userCommand sublog
                 sublog = `<userCommand>\n` +
@@ -51,12 +52,13 @@ module.exports = async (username) => {
                   `<command>${result.user_request.type}</command>\n`;
             
                 // Check if any optional fields are present and add them to the sublog
-                if (result.user_request.user != null) sublog += `<username>${result.username}</username>\n`;
-                if (result.user_request.stock_symbol != null) sublog += `<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`;
-                if (result.user_request.filename != null) sublog += `<filename>${result.user_request.filename}</filename>\n`;
-                if (result.user_request.amount != null) sublog += `<funds>${result.user_request.amount}</funds>\n`;
+                if (result.user_request.user != null) sublog = sublog.concat(`<username>${result.username}</username>\n`);
+                if (result.user_request.stock_symbol != null) sublog = sublog.concat(`<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`);
+                if (result.user_request.filename != null) sublog = sublog.concat(`<filename>${result.user_request.filename}</filename>\n`);
+                if (result.user_request.amount != null) sublog  = sublog.concat(`<funds>${result.user_request.amount}</funds>\n`);
             
-                sublog += '</userCommand>\n';
+                sublog = sublog.concat('</userCommand>\n');
+
             } else if (log === 'account_transaction') {
                 sublog = `<accountTransaction>\n` +
                           `<timestamp>${result.transaction_timestamp}</timestamp>\n` +
@@ -66,11 +68,12 @@ module.exports = async (username) => {
                           `<username>${result.username}</username>\n` +
                           `<funds>${result.user_request.amount}</funds>\n`
                 
-                if(result.user_request.stock_symbol != null) {
-                    sublog += `<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`;
+                if (result.user_request.stock_symbol != null) {
+                    sublog  = sublog.concat(`<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`);
                 }
                 
-                sublog += "</accountTransaction>\n";
+                sublog  = sublog.concat("</accountTransaction>\n");
+
             } else if (log === "system_event") {
                 sublog = `<systemEvent>\n`+
                             `<timestamp>${result.transaction_timestamp}</timestamp>\n`+
@@ -79,12 +82,13 @@ module.exports = async (username) => {
                             `<command>${result.user_request.type}</command>\n`
                 
                 // Check if any optional fields are present and add them to the sublog
-                if (result.user_request.user != null) sublog += `<username>${result.username}</username>\n`;
-                if (result.user_request.stock_symbol != null) sublog += `<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`;
-                if (result.user_request.filename != null) sublog += `<filename>${result.user_request.filename}</filename>\n`;
-                if (result.user_request.amount != null) sublog += `<funds>${result.user_request.amount}</funds>\n`;
+                if (result.user_request.user != null) sublog = sublog.concat(`<username>${result.username}</username>\n`);
+                if (result.user_request.stock_symbol != null) sublog  = sublog.concat(`<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`);
+                if (result.user_request.filename != null) sublog = sublog.concat(`<filename>${result.user_request.filename}</filename>\n`);
+                if (result.user_request.amount != null) sublog = sublog.concat(`<funds>${result.user_request.amount}</funds>\n`);
       
-                sublog += "</systemEvent>\n";
+                sublog  = sublog.concat("</systemEvent>\n");
+
             } else if (log === "error_event") {
                 sublog = `<errorEvent>\n`+
                             `<timestamp>${result.transaction_timestamp}</timestamp>\n`+
@@ -93,13 +97,14 @@ module.exports = async (username) => {
                             `<command>${result.user_request.type}</command>\n`
                 
                 // Check if any optional fields are present and add them to the sublog
-                if (result.user_request.user != null) sublog += `<username>${result.username}</username>\n`;
-                if (result.user_request.stock_symbol != null) sublog += `<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`;
-                if (result.user_request.filename != null) sublog += `<filename>${result.user_request.filename}</filename>\n`;
-                if (result.user_request.amount != null) sublog += `<funds>${result.user_request.amount}</funds>\n`;
-                if (result.error_message != null) sublog += `<errorMessage>${result.error_message}</errorMessage>\n`;
+                if (result.user_request.user != null) sublog = sublog.concat(`<username>${result.username}</username>\n`);
+                if (result.user_request.stock_symbol != null) sublog  = sublog.concat(`<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`);
+                if (result.user_request.filename != null) sublog = sublog.concat(`<filename>${result.user_request.filename}</filename>\n`);
+                if (result.user_request.amount != null) sublog = sublog.concat(`<funds>${result.user_request.amount}</funds>\n`);
+                if (result.error_message != null) sublog = sublog.concat(`<errorMessage>${result.error_message}</errorMessage>\n`);
       
-                sublog += "</errorEvent>\n";
+                sublog = sublog.concat("</errorEvent>\n");
+
             } else if (log === "debug_event") {
                 sublog = `<debugEvent>\n`+
                             `<timestamp>${result.transaction_timestamp}</timestamp>\n`+
@@ -108,13 +113,13 @@ module.exports = async (username) => {
                             `<command>${result.user_request.type}</command>\n`
                 
                 // Check if any optional fields are present and add them to the sublog
-                if (result.user_request.user != null) sublog += `<username>${result.username}</username>\n`;
-                if (result.user_request.stock_symbol != null) sublog += `<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`;
-                if (result.user_request.filename != null) sublog += `<filename>${result.user_request.filename}</filename>\n`;
-                if (result.user_request.amount != null) sublog += `<funds>${result.user_request.amount}</funds>\n`;
-                if (result.error_message != null) sublog += `<debugMessage>${result.error_message}</debugMessage>\n`;
+                if (result.user_request.user != null) sublog = sublog.concat(`<username>${result.username}</username>\n`);
+                if (result.user_request.stock_symbol != null) sublog  = sublog.concat(`<stockSymbol>${result.user_request.stock_symbol}</stockSymbol>\n`);
+                if (result.user_request.filename != null) sublog = sublog.concat(`<filename>${result.user_request.filename}</filename>\n`);
+                if (result.user_request.amount != null) sublog = sublog.concat(`<funds>${result.user_request.amount}</funds>\n`);
+                if (result.error_message != null) sublog = sublog.concat(`<errorMessage>${result.error_message}</errorMessage>\n`);
       
-                sublog += "</debugEvent>\n";
+                sublog = sublog.concat("</debugEvent>\n");
             }
             fs.appendFileSync('dumplog.xml', sublog);
         });
