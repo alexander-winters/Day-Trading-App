@@ -24,6 +24,6 @@ async function create_user(username) {
     }
 }
 
-create_user('olivier');
+//create_user('olivier');
 
 module.exports = { create_user };

@@ -14,11 +14,15 @@ const { sell,
     cancel_set_sell,
     set_sell_trigger
 } = require('../../transaction-server/sell_transaction');
+const {
+    add
+} = require('../../transaction-server/misc_transaction');
 
 // dashboardRoutes is an instance of the express router.
 // We use it to define our routes.
 // The router will be added as a middleware and will take control of requests starting with path /dashboard.
 const dashboardRoutes = express.Router();
+
 let previous_stock_symbol = '';
 
 // 'http://localhost:5000/dashboard?type=quote&user=john&stock_symbol=ABC'
@@ -38,9 +42,14 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
     if (type === 'add') {
         try {
             // Need to get the current balance from db for user
-            let user_currrent_balance = 0;
-            user_currrent_balance += amount;
-            res.json(user_currrent_balance);
+            // let user_currrent_balance = 0;
+            // user_currrent_balance += amount;
+            // res.json(user_currrent_balance);
+
+            const user_add = await add(user, amount);
+            res.json(user_add);
+            //res.json({myValue: 3456});
+
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
