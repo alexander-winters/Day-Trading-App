@@ -36,8 +36,8 @@ async function get_quote(user, stock_symbol) {
 
     // Construct and return the quote object
     let quote_obj = {
-        "Quoteprice": p,
-        "SYM": sym,
+        "quote_price": p,
+        "stock_symbol": sym,
         "username": user,
         "timestamp": new Date().getTime(),
         "cryptokey": base64url(crypto.randomBytes(20))
