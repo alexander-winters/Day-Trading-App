@@ -1,46 +1,95 @@
 // const fetch = require('node-fetch');
 const { get_quote } = require("../quote-server/quote_server");
 
+const User = require('../server/db/models/user');
+//require("dotenv").config({ path: "../server/config.env" });
+const connectDB = require('../server/db/conn');
+
+// Connect to MongoDB
+connectDB();
+
+const expireAfterSeconds = 60;
+
 // const url = 'http://localhost:5000/dashboard'
-let user_currrent_balance = 100000;
 
 async function buy(user, stock_symbol, amount) {
     console.log("Trying to buy");
+    console.log("Stock: " + stock_symbol + " for amount: " + amount);
+
     const quote = await get_quote(user, stock_symbol);
-    let buy_total = quote * amount; // Calculates total price user is trying to purchase
+    let stock_quantity = amount / Number(quote.Quoteprice); // Calculates total quantity of stocks to buy
+
+    console.log("Quoted buy price: " + stock_symbol + " - " + Number(quote.Quoteprice));
+
+    const userObj = await User.findOne({ "username": user });
+
+    console.log("Existing funds: User: " + userObj.username + " Funds: " + userObj.funds);
+
     // Check False pre-condition first to avoid if, else.
     // Check if the user does not have enough
-    if (user_currrent_balance < buy_total) {
+    if (userObj.funds < amount) {
+        console.log("Insufficient funds");
         return ({ error: "Insufficient funds" });
     }
-    // Assume the user has enough
+
+    console.log("Date: " + (Date.now() + (expireAfterSeconds * 1000)));
+
+    // Add the buy to pending
+    userObj.pending_buy.stock_symbol = stock_symbol;
+    userObj.pending_buy.amount = amount;
+    userObj.pending_buy.quantity = stock_quantity;
+    userObj.pending_buy.expiration_time = Date.now() + (expireAfterSeconds * 1000); // expires after 60 seconds (60,000ms)
+
+    await userObj.save();
+
+    console.log("User after buy command:\n" + userObj);
+
     return ({success: "Please confirm or cancel the transaction" });
 }
 
 async function commit_buy(user) {
     console.log("Trying to commit most recent buy");
 
-    // TODO: REPLACE BELOW: Fetch most recent buy command from the user's db
-    let pending_buy = true;
-    let buy_time = Date.now();
-    let buy_amount = 2000;
-    let buy_price = 100;
+    const userObj = await User.findOne({ "username": user });
 
+    console.log("Is Buy Set (regardless of expiration) = " + (userObj.pending_buy.stock_symbol !== undefined));
+    
     // Only commit a buy if it was performed in the last 60 seconds (i.e. 60,000ms)
-    if (pending_buy && (Date.now() - buy_time <= (60 * 1000))) {
-        let new_balance = user_currrent_balance - buy_amount;
-        if (new_balance >= 0) {
-            user_currrent_balance = new_balance;
+    if (userObj.pending_buy.stock_symbol !== undefined && (Date.now() <= userObj.pending_buy.expiration_time)) {
 
-            // TODO - REPLACE: Add purchased amount of stock to the db for that user
-            let user_stock_db_Key = 0;
-            user_stock_db_Key += (buy_amount / buy_price); // Add purchased quantity to users owned stocks
-
-            return ({ success: "Buy commited."});
-        }
-        else {
+        // Check if the user does not have enough
+        if (userObj.funds < userObj.pending_buy.amount) {
+            console.log("Insufficient funds");
             return ({ error: "Insufficient funds" });
         }
+
+        // Commit the buy
+        // Remove funds and adds purchased quantity of stocks
+        userObj.funds -= userObj.pending_buy.amount;
+
+        //let new_quantity = userObj.pending_buy.quantity;
+        // const curStock = userObj.stocks_owned.find({"stock_symbol": userObj.pending_buy.stock_symbol});
+        const curStock = userObj.stocks_owned.find(function (x) {return x.stock_symbol === userObj.pending_buy.stock_symbol});
+
+        console.log("curStock = " + curStock);
+
+        if (curStock) {
+            curStock.quantity += userObj.pending_buy.quantity; // add new quantity to existing stock
+        } else {
+            userObj.stocks_owned.push({stock_symbol: userObj.pending_buy.stock_symbol, quantity: userObj.pending_buy.quantity}); // create new stock
+        }
+        
+        // Remove from pending_buy
+        userObj.pending_buy.stock_symbol = undefined;
+        userObj.pending_buy.amount = 0;
+        userObj.pending_buy.quantity = 0;
+        userObj.pending_buy.expiration_time = Date.now();
+
+        await userObj.save();
+
+        console.log("User after commit_buy command:\n" + userObj);
+
+        return ({ success: "Buy commited."});
     }
     else {
         return ({ error: "Could not commit buy. No \'BUY\' command executed in the last 60 seconds."});
@@ -50,20 +99,27 @@ async function commit_buy(user) {
 async function cancel_buy(user) {
     console.log("Trying to cancel most recent buy");
 
-    // TODO: REPLACE BELOW: Fetch most recent buy command from the user's db
-    let pending_buy = true;
-    let buy_time = Date.now();
-    let transaction_id = "abc123";
+    const userObj = await User.findOne({ "username": user });
+
+    let successFlag = (userObj.pending_buy.stock_symbol === undefined || Date.now() > userObj.pending_buy.expiration_time);
+
+    // Remove from pending_buy
+    // NOTE: No need to check for stated pre-conditions mentioned in the spec
+    // as there is no reason we would not want to remove an expired pending_buy.
+    userObj.pending_buy.stock_symbol = undefined;
+    userObj.pending_buy.amount = 0;
+    userObj.pending_buy.quantity = 0;
+    userObj.pending_buy.expiration_time = Date.now();
+
+    await userObj.save();
+    console.log("User after cancel_buy command:\n" + userObj);
 
     // Only cancel a buy if it was performed in the last 60 seconds (i.e. 60,000ms)
-    if (pending_buy && (Date.now() - buy_time <= (60 * 1000))) {
-
-        // TODO: REPLACE: Remove pending buy transaction from the db for that user given a "transaction_id"
-
-        return ({ success: "Buy canceled."});
+    if (successFlag) {
+        return ({ error: "Nothing to cancel. No BUY command was executed in the last 60 seconds. Removing residual data."});
     }
     else {
-        return ({ error: "Could not cancel buy. No \'BUY\' command executed in the last 60 seconds."});
+        return ({ success: "Buy canceled."});
     }
 }
 

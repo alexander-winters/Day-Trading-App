@@ -14,9 +14,9 @@ const { sell,
     cancel_set_sell,
     set_sell_trigger
 } = require('../../transaction-server/sell_transaction');
-const {
-    add
-} = require('../../transaction-server/misc_transaction');
+const { add } = require('../../transaction-server/misc_transaction');
+const { create_user } = require('../../server/db/db_functions/user_functions');
+
 
 // dashboardRoutes is an instance of the express router.
 // We use it to define our routes.
