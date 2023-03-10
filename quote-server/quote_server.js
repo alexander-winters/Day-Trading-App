@@ -4,7 +4,7 @@ const guassian = require('gaussian')
 
 async function get_quote(user, stock_symbol) {
     // Introduce a delay of 3 seconds using setTimeout
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Extract the first 3 characters of the symbol
     let sym = stock_symbol.substring(0,3);

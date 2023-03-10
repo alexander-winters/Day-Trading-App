@@ -5,7 +5,7 @@ const transaction_schema = new mongoose.Schema( {
         type: Number,
         ref: 'User',
         unique: true,
-        required: true
+        required: false
     },
     username: {
         type: String,
@@ -21,6 +21,11 @@ const transaction_schema = new mongoose.Schema( {
     transaction_hash: {
         type: String,
         unique: true,
+        required: false
+    },
+    log_type: {
+        type: String,
+        unique: false,
         required: true
     },
     user_request: {
@@ -31,18 +36,18 @@ const transaction_schema = new mongoose.Schema( {
     server_response: {
         type: Object,
         unique: false,
-        required: true
+        required: false
     },
     transaction_timestamp: {
         type: Date,
         unique: false,
-        required: true,
+        required: false,
         default: Date.now()
     },
     transaction_expires: {
         type: Date,
         unique: false,
-        required: true,
+        required: false,
         default: Date.now() + (60 * 1000) 
     },
 });
