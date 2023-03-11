@@ -62,7 +62,7 @@ def send_request(transaction_id, params, session):
         userid = args[0]
 
         body = {
-            'type': 'add',
+            'type': 'commit_buy',
             'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': None,
@@ -92,7 +92,7 @@ def send_request(transaction_id, params, session):
         amount = args[2]
 
         body = {
-            'type': 'add',
+            'type': 'sell',
             'user': userid,
             'transaction_id': transaction_id,
             'stock_symbol': stock_symbol,

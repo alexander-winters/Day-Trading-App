@@ -1,7 +1,7 @@
 const User = require('../models/user');
 require("dotenv").config({ path: "../../config.env" });
 const connectDB = require('../conn')
-
+const { create_sell_account } = require('./sell_functions');
 // Connect to MongoDB
 connectDB();
 
@@ -12,6 +12,9 @@ async function create_user(username) {
 
         // Save the new user to the database
         await new_user.save();
+
+        // Create a user sell account
+        await create_sell_account(username);
 
         // Return the newly created user
         console.log(new_user);
@@ -24,6 +27,6 @@ async function create_user(username) {
     }
 }
 
-//create_user('olivier');
+// create_user('elmer_test');
 
 module.exports = { create_user };
