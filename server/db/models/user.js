@@ -40,21 +40,6 @@ const user_schema = new mongoose.Schema({
             type: Date
         }
     },
-    pending_sell: {
-        stock_symbol: {
-            type: String,
-            unique: true,
-        },
-        amount: {
-            type: Number,
-        },
-        quantity: {
-            type: Number,
-        },
-        expiration_time: {
-            type: Date
-        }
-    },
     stocks_owned: [
         {
             stock_symbol: String,
