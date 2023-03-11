@@ -2,56 +2,89 @@ const quote_server = require("../quote-server/quote_server");
 const User = require("../server/db/models/user");
 require("dotenv").config({ path: "../server/config.env" });
 const connectDB = require('../server/db/conn');
-const utils = require("./utils");
 
+const TIME_TO_EXPIRE = 60;
+
+// Connect to db
 connectDB();
-let transaction = utils.initialize_transaction();
-let set_sell_pending;
 
 async function sell(user, stock_symbol, amount) {
     const quote = await quote_server.get_quote(stock_symbol, user);
-
-    const user_acc = await User.findOne({ username: user })
-    // Verify user has stocks owned 
-    // if ( !user.stocks[stock_symbol] ) {
-    //     return({error: "No stocks owned"})
-    // }
-
-    // Verify user have enough stocks to sell
-    // if (user.stocks[stock_symbol].value < amount) {
-    //     return({error: "Insufficient stocks to sell"})
-    // }
-
     const sell_qty = amount/quote.Quoteprice;
 
-    transaction.type = "SELL";
-    transaction.sym = stock_symbol;
-    transaction.qty = sell_qty;
-    transaction.amount = amount;
-    transaction.sell_time = Date.now();
+    //Get user account
+    const user_acc = await User.findOne({ username: user });
 
+    //Get specific stock owned
+    const user_stock = user_acc.stocks_owned.find( stock => stock.stock_symbol === stock_symbol );
+
+    // Verify user has stocks owned 
+    if ( !user_stock ) {
+        return({error: "No stocks owned"});
+    }
+
+    // Verify user have enough stocks to sell
+    if ( user_stock.quantity < sell_qty ) {
+        return({error: "Insufficient stocks to sell"});
+    }
+
+    // Create a sell_pending
+    user_acc.pending_sell.stock_symbol = stock_symbol;
+    user_acc.pending_sell.amount = amount;
+    user_acc.pending_sell.quantity = sell_qty;
+    user_acc.pending_sell.expiration_time = Date.now() + (TIME_TO_EXPIRE * 1000);
+
+    await user_acc.save();
+
+
+    console.log("Sell transaction created");
+    console.log(user_acc);
     return ({success: "Please confirm or cancel the sell transaction" });
 }
 
 async function commit_sell(user) {
+    const user_acc = await User.findOne({ username: user });
+    const pending_sell = user_acc.pending_sell;
+
     // Check if there is a transaction pending
-    if (transaction.type == 'SELL' && (Date.now() - transaction.sell_time <= (60 * 1000))) {
+    if (pending_sell && (Date.now() <= pending_sell.expiration_time)) {
 
-        utils.update_balance(user, transaction); // Update user balance
-        utils.update_stock(user, transaction); // Update stock owned
+        // Update user stock owned
+        user_acc.stocks_owned.find( stock => stock.stock_symbol === pending_sell.stock_symbol ).quantity -= pending_sell.quantity;
         
-        transaction = utils.initialize_transaction(); // resets transaction
+        // Update user funds
+        user_acc.funds += user_acc.pending_sell.amount;
 
-        return({success: "Sell transaction was successful"})
+        // Remove the pending sell
+        await User.updateOne({ username: user }, {$unset: {'pending_sell':''}});
+
+        await user_acc.save();
+
+        // console.log("User after sell \n" +user_acc)
+        console.log("Sell transaction was successful");
+        console.log(await User.findOne({ username: user }));
+
+        return({success: "Sell transaction was successful"});
     }    
 
-    return({error: "No sell transaction initiated within 60 seconds"})
+    return({error: "No sell transaction initiated within 60 seconds"});
 }
 
 async function cancel_sell(user) {
-    if (transaction.type == 'SELL' && (Date.now() - transaction.sell_time <= (60 * 1000))) {
-        transaction = utils.initialize_transaction(); // resets transaction
-        return({success: "Sell transaction canceled"})
+    const user_acc = await User.findOne({ username: user });
+    const pending_sell = user_acc.pending_sell;
+
+    // Check if there is a transaction pending
+    if (pending_sell && (Date.now() <= pending_sell.expiration_time)) {
+        
+        // Remove the pending sell
+        await User.updateOne({ username: user }, {$unset: {'pending_sell':''}});
+
+        await user_acc.save();
+
+        console.log("Sell transaction canceled");
+        console.log(await User.findOne({ username: user }));
+        return({success: "Sell transaction canceled"});
     }
     
     return ({error: "No sell transaction initiated within 60 seconds"})
