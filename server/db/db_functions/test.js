@@ -1,5 +1,6 @@
 // const { create_user } = require("./user_functions");
 const User = require('../models/user');
+const Transaction = require('../models/transaction')
 require("dotenv").config({ path: "../../config.env" });
 const connectDB = require('../conn');
 const { create_user } = require('./user_functions');
@@ -13,5 +14,10 @@ async function get_users() {
     console.log("Done printing user list.");
 }
 
-//create_user("Jim");
-get_users();
+async function get_transactions() {
+    const transactions = await Transaction.find();
+    console.log(transactions);
+}
+
+// get_users();
+get_transactions();
