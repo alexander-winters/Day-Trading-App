@@ -24,10 +24,20 @@ const transaction_schema = new mongoose.Schema( {
         unique: false,
         required: false
     },
+    log_type: {
+        type: String,
+        unique: false,
+        required: true
+    },
+    server: {
+        type: String,
+        unique: false,
+        required: false
+    },
     user_request: {
         type: Object,
         unqiue: false,
-        required: true
+        required: false
     },
     server_response: {
         type: Object,
@@ -37,13 +47,13 @@ const transaction_schema = new mongoose.Schema( {
     transaction_timestamp: {
         type: Date,
         unique: false,
-        required: true,
+        required: false,
         default: Date.now()
     },
     transaction_expires: {
         type: Date,
         unique: false,
-        required: true,
+        required: false,
         default: Date.now() + (60 * 1000) 
     },
 });
