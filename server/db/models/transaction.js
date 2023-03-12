@@ -5,24 +5,22 @@ const transaction_schema = new mongoose.Schema( {
     user_id: {
         type: Number,
         ref: 'User',
-        unique: true,
-        required: false
+        unique: false,
+        required: true
     },
     username: {
         type: String,
         ref: 'User',
-        unique: true,
+        unique: false,
         required: true
     },
     transaction_id: {
         type: Number,
         unique: false,
-        required: false,
     },
     transaction_hash: {
         type: String,
         unique: false,
-        required: false
     },
     log_type: {
         type: String,
@@ -56,6 +54,16 @@ const transaction_schema = new mongoose.Schema( {
         required: false,
         default: Date.now() + (60 * 1000) 
     },
+    error_event: {
+        type: String,
+        unique: false,
+        required: false,
+    },
+    debug_event: {
+        type: String,
+        unqiue: false,
+        required: false
+    }
 });
 
 transaction_schema.pre('save', async function(next) {

@@ -5,18 +5,13 @@ const connectDB = require('../conn');
 // Connect to MongoDB
 connectDB();
 
-const request = {
-    cmd: "SELL",
-}
-
-
-async function create_transaction(user, request) {
+async function create_transaction(userid, user, logType, request = {}) {
     try {
-        const transaction = await Transaction({username: user, user_request: request});
+        const transaction = await Transaction({user_id: userid, username: user, log_type: logType, user_request: request});
 
         await transaction.save();
 
-        console.log(transaction);
+        // console.log(transaction);
         return transaction;
 
     } catch (error) {
@@ -25,8 +20,6 @@ async function create_transaction(user, request) {
         throw new Error('Error creating transaction');
     }
 }
-
-create_transaction('Ellie', request);
 
 module.exports = {
     create_transaction,
