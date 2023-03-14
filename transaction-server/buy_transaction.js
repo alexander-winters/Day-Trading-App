@@ -167,7 +167,7 @@ async function cancel_buy(user) {
 }
 
 async function set_buy_amount(user, stock_symbol, amount) {
-    // TODO: Complete & Test
+    // TODO: Test
 
     console.log("Trying to set automatic buy amount");
 
@@ -211,9 +211,51 @@ async function set_buy_amount(user, stock_symbol, amount) {
 }
 
 async function set_buy_trigger(user, stock_symbol, amount) {
-    // TODO: Complete
+    // TODO: Test
     console.log("Trying to set automatic buy trigger");
-    console.log("Not yet implemented. Command could not be executed.");
+
+    const request = {
+        type: 'SET_BUY_TRIGGER',
+        user: user,
+        stock_symbol: stock_symbol,
+        amount: amount
+    }
+
+    //Get user account
+    const user_acc = await User.findOne({ "username": user });
+
+    //Get user buy transactions
+    const buy_acc = await Buy.findOne({ username: user });
+
+    // Make sure there is a pending_set_buy set with the matching stock symbol
+    if (buy_acc.pending_set_buy.stock_symbol !== stock_symbol) {
+        // Create a transaction
+        await create_transaction(user_acc.user_id, user, 'error_event', request);
+
+        console.log(`There is no SET_BUY currently set for stock ${stock_symbol}`);
+        return ({error: `There is no SET_BUY currently set for stock ${stock_symbol}`});
+    }
+
+    // Add a new trigger
+    // NOTE: We allow duplicate stock_symbols
+    // (i.e. you can have multiple triggers set for the same stock at different buy prices)
+    let quantity = buy_acc.pending_set_buy.amount / amount // purchase amount / price per share
+    buy_acc.buy_triggers.push({
+        stock_symbol: buy_acc.pending_set_buy.stock_symbol,
+        amount: buy_acc.pending_set_buy.amount,
+        quantity: quantity,
+        buy_price: amount
+    }); 
+
+    await buy_acc.save();
+    await user_acc.save();
+
+    // Create a transaction
+    await create_transaction(user_acc.user_id, user, 'user_command', request);
+
+    console.log(`Buy transaction was set at buy price: ${price}`);
+    //console.log(await Buy.findOne({ "username": user })); // Display buy account
+    return ({success: `Buy transaction was set at ${price}`});
 }
 
 async function cancel_set_buy(user, stock_symbol, amount) {
