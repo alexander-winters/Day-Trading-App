@@ -236,16 +236,32 @@ async function set_buy_trigger(user, stock_symbol, amount) {
         return ({error: `There is no SET_BUY currently set for stock ${stock_symbol}`});
     }
 
-    // Add a new trigger
-    // NOTE: We allow duplicate stock_symbols
-    // (i.e. you can have multiple triggers set for the same stock at different buy prices)
+    // Add a new trigger or replace the existing one for the same stock
+
     let quantity = buy_acc.pending_set_buy.amount / amount // purchase amount / price per share
-    buy_acc.buy_triggers.push({
-        stock_symbol: buy_acc.pending_set_buy.stock_symbol,
-        amount: buy_acc.pending_set_buy.amount,
-        quantity: quantity,
-        buy_price: amount
-    }); 
+
+    const existing_set_buy = buy_acc.buy_triggers.find(function (x) {return x.stock_symbol === stock_symbol});
+
+    console.log("existing_set_buy = " + existing_set_buy);
+
+    if (existing_set_buy) {
+        existing_set_buy.stock_symbol = buy_acc.pending_set_buy.stock_symbol;
+        existing_set_buy.amount = buy_acc.pending_set_buy.amount;
+        existing_set_buy.quantity = quantity;
+        existing_set_buy.buy_price = amount;
+    } else {
+        buy_acc.buy_triggers.push({
+            stock_symbol: buy_acc.pending_set_buy.stock_symbol,
+            amount: buy_acc.pending_set_buy.amount,
+            quantity: quantity,
+            buy_price: amount
+        }); 
+    }
+
+    // Remove from pending_set_buy
+    buy_acc.pending_set_buy.stock_symbol = undefined;
+    buy_acc.pending_set_buy.amount = undefined;
+    buy_acc.pending_set_buy.quantity = undefined;
 
     await buy_acc.save();
     await user_acc.save();
@@ -258,10 +274,56 @@ async function set_buy_trigger(user, stock_symbol, amount) {
     return ({success: `Buy transaction was set at ${price}`});
 }
 
-async function cancel_set_buy(user, stock_symbol, amount) {
-    // TODO: Complete
+async function cancel_set_buy(user, stock_symbol) {
+    // TODO: Test
     console.log("Trying to cancel automatic buy");
-    console.log("Not yet implemented. Command could not be executed.");
+
+    const request = {
+        type: 'SET_BUY_TRIGGER',
+        user: user,
+        stock_symbol: stock_symbol,
+        amount: amount
+    }
+
+    //Get user account
+    const user_acc = await User.findOne({ "username": user });
+
+    //Get user buy transactions
+    const buy_acc = await Buy.findOne({ "username": user });
+
+    // Remove any active pending_set_buy
+    buy_acc.pending_set_buy.stock_symbol = undefined;
+    buy_acc.pending_set_buy.amount = undefined;
+    buy_acc.pending_set_buy.quantity = undefined;
+
+    //Find corresponding buy trigger
+    const trigger = buy_acc.buy_triggers.find(trig => (trig.stock_symbol === stock_symbol));
+
+    // If trigger doesn't exists, do nothing
+    if (!trigger) {
+        // Create a transaction
+        await create_transaction(user_acc.user_id, user, 'error_event', request);
+
+        console.error(`There is no buy trigger for ${stock_symbol}`);
+        return({error: `There is no buy trigger for ${stock_symbol}`});
+    }
+
+    // If trigger exists, remove trigger
+
+    // Restore amount spent
+    user_acc.funds += trigger.amount;
+
+    // Remove the buy trigger
+    await Buy.updateOne({ username: user }, {$pull: {'buy_triggers': {stock_symbol: `${stock_symbol}`}}});
+
+    await buy_acc.save();
+    await user_acc.save();
+
+    // Create a transaction
+    await create_transaction(user_acc.user_id, user, 'user_command', request);
+
+    console.log(`Buy trigger for ${stock_symbol} was succesfully canceled`);
+    return ({ success: `Buy trigger for ${stock_symbol} was succesfully canceled`});
 }
 
 module.exports = { buy,

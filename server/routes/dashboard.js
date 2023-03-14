@@ -117,7 +117,7 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
         }
     } else if (type === 'cancel_set_buy') {
         try {
-            const user_cancel_set_buy = await cancel_set_buy(user, stock_symbol, amount);
+            const user_cancel_set_buy = await cancel_set_buy(user, stock_symbol);
             res.json(user_cancel_set_buy);
 
         } catch (err) {
