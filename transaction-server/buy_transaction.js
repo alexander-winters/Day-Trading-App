@@ -1,9 +1,9 @@
 // const fetch = require('node-fetch');
 const { get_quote } = require("../quote-server/quote_server");
-
 const User = require('../server/db/models/user');
-//require("dotenv").config({ path: "../server/config.env" });
+require("dotenv").config({ path: "../server/config.env" });
 const connectDB = require('../server/db/conn');
+const { create_transaction } = require('../server/db/db_functions/transaction_functions');
 
 // Connect to MongoDB
 connectDB();
@@ -19,6 +19,13 @@ async function buy(user, stock_symbol, amount) {
     const quote = await get_quote(user, stock_symbol);
     let stock_quantity = amount / Number(quote.Quoteprice); // Calculates total quantity of stocks to buy
 
+    const request = {
+        type: 'BUY',
+        user: user,
+        stock_symbol: stock_symbol,
+        amount: amount
+    }
+
     console.log("Quoted buy price: " + stock_symbol + " - " + Number(quote.Quoteprice));
 
     const userObj = await User.findOne({ "username": user });
@@ -28,6 +35,9 @@ async function buy(user, stock_symbol, amount) {
     // Check False pre-condition first to avoid if, else.
     // Check if the user does not have enough
     if (userObj.funds < amount) {
+        // Create a transaction
+        await create_transaction(user_acc.user_id, user, 'error_event', request);
+
         console.log("Insufficient funds");
         return ({ error: "Insufficient funds" });
     }
@@ -42,6 +52,9 @@ async function buy(user, stock_symbol, amount) {
 
     await userObj.save();
 
+    // Create a transaction
+    await create_transaction(user_acc.user_id, user, 'user_command', request);
+
     console.log("User after buy command:\n" + userObj);
 
     return ({success: "Please confirm or cancel the transaction" });
@@ -54,11 +67,21 @@ async function commit_buy(user) {
 
     console.log("Is Buy Set (regardless of expiration) = " + (userObj.pending_buy.stock_symbol !== undefined));
     
+    const request = {
+        type: 'COMMIT_BUY',
+        user: user,
+        stock_symbol: userObj.pending_buy.stock_symbol,
+        amount: userObj.pending_buy.amount
+    }
+
     // Only commit a buy if it was performed in the last 60 seconds (i.e. 60,000ms)
     if (userObj.pending_buy.stock_symbol !== undefined && (Date.now() <= userObj.pending_buy.expiration_time)) {
 
         // Check if the user does not have enough
         if (userObj.funds < userObj.pending_buy.amount) {
+            // Create a transaction
+            await create_transaction(user_acc.user_id, user, 'error_event', request);
+
             console.log("Insufficient funds");
             return ({ error: "Insufficient funds" });
         }
@@ -87,11 +110,17 @@ async function commit_buy(user) {
 
         await userObj.save();
 
+        // Create a transaction
+        await create_transaction(user_acc.user_id, user, 'user_command', request);
+
         console.log("User after commit_buy command:\n" + userObj);
 
         return ({ success: "Buy commited."});
     }
     else {
+        // Create a transaction
+        await create_transaction(user_acc.user_id, user, 'error_event', request);
+
         return ({ error: "Could not commit buy. No \'BUY\' command executed in the last 60 seconds."});
     }
 }
@@ -102,6 +131,13 @@ async function cancel_buy(user) {
     const userObj = await User.findOne({ "username": user });
 
     let successFlag = (userObj.pending_buy.stock_symbol === undefined || Date.now() > userObj.pending_buy.expiration_time);
+
+    const request = {
+        type: 'CANCEL_BUY',
+        user: user,
+        stock_symbol: userObj.pending_buy.stock_symbol,
+        amount: userObj.pending_buy.amount
+    }
 
     // Remove from pending_buy
     // NOTE: No need to check for stated pre-conditions mentioned in the spec
@@ -116,9 +152,15 @@ async function cancel_buy(user) {
 
     // Only cancel a buy if it was performed in the last 60 seconds (i.e. 60,000ms)
     if (successFlag) {
+        // Create a transaction
+        await create_transaction(user_acc.user_id, user, 'error_event', request);
+
         return ({ error: "Nothing to cancel. No BUY command was executed in the last 60 seconds. Removing residual data."});
     }
     else {
+        // Create a transaction
+        await create_transaction(user_acc.user_id, user, 'user_command', request);
+
         return ({ success: "Buy canceled."});
     }
 }
