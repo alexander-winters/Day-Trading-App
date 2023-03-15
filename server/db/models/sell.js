@@ -9,7 +9,7 @@ const sell_schema = new mongoose.Schema({
     },
     pending_sell: {
         stock_symbol: {
-            type: String,
+            type: String
         },
         amount: {
             type: Number,
