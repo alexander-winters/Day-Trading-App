@@ -10,7 +10,6 @@ const sell_schema = new mongoose.Schema({
     pending_sell: {
         stock_symbol: {
             type: String,
-            unique: true,
         },
         amount: {
             type: Number,
@@ -24,8 +23,7 @@ const sell_schema = new mongoose.Schema({
     },
     pending_set_sell: {
         stock_symbol: {
-            type: String,
-            unique: true,
+            type: String
         },
         amount: {
             type: Number,

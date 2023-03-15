@@ -10,8 +10,7 @@ const buy_schema = new mongoose.Schema({
     // TODO: Migrate pending_buy to here from user.js
     pending_set_buy: {
         stock_symbol: {
-            type: String,
-            unique: true,
+            type: String
         },
         amount: {
             type: Number,

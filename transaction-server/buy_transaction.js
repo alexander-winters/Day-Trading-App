@@ -18,7 +18,7 @@ async function buy(user, stock_symbol, amount) {
     console.log("Stock: " + stock_symbol + " for amount: " + amount);
 
     const quote = await get_quote(user, stock_symbol);
-    let stock_quantity = amount / Number(quote.Quoteprice); // Calculates total quantity of stocks to buy
+    let stock_quantity = amount / Number(quote.quote_price); // Calculates total quantity of stocks to buy
 
     const request = {
         type: 'BUY',
@@ -27,7 +27,7 @@ async function buy(user, stock_symbol, amount) {
         amount: amount
     }
 
-    console.log("Quoted buy price: " + stock_symbol + " - " + Number(quote.Quoteprice));
+    console.log("Quoted buy price: " + stock_symbol + " - " + Number(quote.quote_price));
 
     const user_acc = await User.findOne({ "username": user });
 
@@ -167,8 +167,6 @@ async function cancel_buy(user) {
 }
 
 async function set_buy_amount(user, stock_symbol, amount) {
-    // TODO: Test
-
     console.log("Trying to set automatic buy amount");
 
     const request = {
@@ -207,11 +205,11 @@ async function set_buy_amount(user, stock_symbol, amount) {
     await create_transaction(user_acc.user_id, user, 'user_command', request);
 
     console.log("Set buy trigger initialized");
+    console.log("User after set_buy_amount command:\n" + user_acc + "\n" + buy_acc);
     return ({ success: "Set buy trigger initialized"});
 }
 
 async function set_buy_trigger(user, stock_symbol, amount) {
-    // TODO: Test
     console.log("Trying to set automatic buy trigger");
 
     const request = {
@@ -269,20 +267,20 @@ async function set_buy_trigger(user, stock_symbol, amount) {
     // Create a transaction
     await create_transaction(user_acc.user_id, user, 'user_command', request);
 
-    console.log(`Buy transaction was set at buy price: ${price}`);
+    console.log(`Buy transaction was set at buy price: ${amount}`);
     //console.log(await Buy.findOne({ "username": user })); // Display buy account
-    return ({success: `Buy transaction was set at ${price}`});
+    console.log("User after set_buy_trigger command:\n" + user_acc + "\n" + buy_acc);
+    return ({success: `Buy transaction was set at ${amount}`});
 }
 
 async function cancel_set_buy(user, stock_symbol) {
-    // TODO: Test
     console.log("Trying to cancel automatic buy");
 
     const request = {
         type: 'SET_BUY_TRIGGER',
         user: user,
         stock_symbol: stock_symbol,
-        amount: amount
+        amount: 0
     }
 
     //Get user account
@@ -292,9 +290,16 @@ async function cancel_set_buy(user, stock_symbol) {
     const buy_acc = await Buy.findOne({ "username": user });
 
     // Remove any active pending_set_buy
-    buy_acc.pending_set_buy.stock_symbol = undefined;
-    buy_acc.pending_set_buy.amount = undefined;
-    buy_acc.pending_set_buy.quantity = undefined;
+    if (buy_acc.pending_set_buy.stock_symbol === stock_symbol) {
+        if (buy_acc.pending_set_buy.amount !== undefined) {
+            // if there is a valid pending_set_buy add back amount before deleting
+            user_acc.funds += buy_acc.pending_set_buy.amount;
+        }
+
+        buy_acc.pending_set_buy.stock_symbol = undefined;
+        buy_acc.pending_set_buy.amount = undefined;
+        buy_acc.pending_set_buy.quantity = undefined;
+    }
 
     //Find corresponding buy trigger
     const trigger = buy_acc.buy_triggers.find(trig => (trig.stock_symbol === stock_symbol));
@@ -323,6 +328,7 @@ async function cancel_set_buy(user, stock_symbol) {
     await create_transaction(user_acc.user_id, user, 'user_command', request);
 
     console.log(`Buy trigger for ${stock_symbol} was succesfully canceled`);
+    console.log("User after cancel_set_buy command:\n" + user_acc + "\n" + buy_acc);
     return ({ success: `Buy trigger for ${stock_symbol} was succesfully canceled`});
 }
 
