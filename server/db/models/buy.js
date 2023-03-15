@@ -1,27 +1,14 @@
 const mongoose = require('mongoose');
 
-const sell_schema = new mongoose.Schema({
+const buy_schema = new mongoose.Schema({
     username: {
         type: String,
         ref: 'User',
         unique: true,
         required: true
     },
-    pending_sell: {
-        stock_symbol: {
-            type: String,
-        },
-        amount: {
-            type: Number,
-        },
-        quantity: {
-            type: Number,
-        },
-        expiration_time: {
-            type: Date
-        }
-    },
-    pending_set_sell: {
+    // TODO: Migrate pending_buy to here from user.js
+    pending_set_buy: {
         stock_symbol: {
             type: String
         },
@@ -32,16 +19,16 @@ const sell_schema = new mongoose.Schema({
             type: Number,
         }
     },
-    sell_triggers: [
+    buy_triggers: [
         {
             stock_symbol: String,
             amount: Number,
             quantity: Number,
-            sell_price: Number,
+            buy_price: Number,
         }
     ]
 });
 
-const Sell = mongoose.model('Sell', sell_schema);
+const Buy = mongoose.model('Buy', buy_schema);
 
-module.exports = Sell;
+module.exports = Buy;
