@@ -299,6 +299,7 @@ def process_commands(transactions):
             futures.append(
                 executor.submit(send_request, transaction_id, params, session)
             )
+            time.sleep(0.3)
         # Wait for all requests to complete
         for future in futures:
             future.result()
