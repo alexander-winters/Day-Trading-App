@@ -47,11 +47,13 @@ async function sell(user, stock_symbol, amount) {
         return({error: "Insufficient stocks to sell"});
     }
 
+    const now = Math.floor(new Date().getTime());
+
     // Create a sell_pending
     sell_acc.pending_sell.stock_symbol = stock_symbol;
     sell_acc.pending_sell.amount = amount;
     sell_acc.pending_sell.quantity = sell_qty;
-    sell_acc.pending_sell.expiration_time = Date.now() + (TIME_TO_EXPIRE * 1000);
+    sell_acc.pending_sell.expiration_time = now + (TIME_TO_EXPIRE * 1000);
 
     // Create a transaction
     await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
@@ -78,8 +80,10 @@ async function commit_sell(user) {
         amount: pending_sell.amount
     }
 
+    const now = Math.floor(new Date().getTime());
+
     // Check if there is a transaction pending
-    if (Object.keys(pending_sell).length === 0 && (Date.now() <= pending_sell.expiration_time)) {
+    if (Object.keys(pending_sell).length === 0 && (now <= pending_sell.expiration_time)) {
 
         // Update user stock owned
         user_acc.stocks_owned.find( stock => stock.stock_symbol === pending_sell.stock_symbol ).quantity -= pending_sell.quantity;
@@ -122,8 +126,9 @@ async function cancel_sell(user) {
         amount: pending_sell.amount
     }
 
+    const now = Math.floor(new Date().getTime());
     // Check if there is a transaction pending
-    if (Object.keys(pending_sell).length === 0 && (Date.now() <= pending_sell.expiration_time)) {
+    if (Object.keys(pending_sell).length === 0 && (now <= pending_sell.expiration_time)) {
         
         // Remove the pending sell
         await Sell.updateOne({ username: user }, {$unset: {'pending_sell':''}});

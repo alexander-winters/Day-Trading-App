@@ -43,13 +43,14 @@ async function buy(user, stock_symbol, amount) {
         return ({ error: "Insufficient funds" });
     }
 
-    console.log("Date: " + (Date.now() + (expireAfterSeconds * 1000)));
+    const now = Math.floor(new Date().getTime());
+    console.log("Date: " + (now + (expireAfterSeconds * 1000)));
 
     // Add the buy to pending
     user_acc.pending_buy.stock_symbol = stock_symbol;
     user_acc.pending_buy.amount = amount;
     user_acc.pending_buy.quantity = stock_quantity;
-    user_acc.pending_buy.expiration_time = Date.now() + (expireAfterSeconds * 1000); // expires after 60 seconds (60,000ms)
+    user_acc.pending_buy.expiration_time = now + (expireAfterSeconds * 1000); // expires after 60 seconds (60,000ms)
 
     await user_acc.save();
 
@@ -75,8 +76,10 @@ async function commit_buy(user) {
         amount: user_acc.pending_buy.amount
     }
 
+    const now = Math.floor(new Date().getTime());
+
     // Only commit a buy if it was performed in the last 60 seconds (i.e. 60,000ms)
-    if (user_acc.pending_buy.stock_symbol !== undefined && (Date.now() <= user_acc.pending_buy.expiration_time)) {
+    if (user_acc.pending_buy.stock_symbol !== undefined && (now <= user_acc.pending_buy.expiration_time)) {
 
         // Check if the user does not have enough
         if (user_acc.funds < user_acc.pending_buy.amount) {
@@ -107,7 +110,7 @@ async function commit_buy(user) {
         user_acc.pending_buy.stock_symbol = undefined;
         user_acc.pending_buy.amount = 0;
         user_acc.pending_buy.quantity = 0;
-        user_acc.pending_buy.expiration_time = Date.now();
+        user_acc.pending_buy.expiration_time = now;
 
         await user_acc.save();
 
@@ -131,7 +134,9 @@ async function cancel_buy(user) {
 
     const user_acc = await User.findOne({ "username": user });
 
-    let successFlag = (user_acc.pending_buy.stock_symbol === undefined || Date.now() > user_acc.pending_buy.expiration_time);
+    const now = Math.floor(new Date().getTime());
+
+    let successFlag = (user_acc.pending_buy.stock_symbol === undefined || now > user_acc.pending_buy.expiration_time);
 
     const request = {
         type: 'CANCEL_BUY',
@@ -146,7 +151,7 @@ async function cancel_buy(user) {
     user_acc.pending_buy.stock_symbol = undefined;
     user_acc.pending_buy.amount = 0;
     user_acc.pending_buy.quantity = 0;
-    user_acc.pending_buy.expiration_time = Date.now();
+    user_acc.pending_buy.expiration_time = now;
 
     await user_acc.save();
     console.log("User after cancel_buy command:\n" + user_acc);
