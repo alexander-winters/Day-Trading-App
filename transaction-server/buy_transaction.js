@@ -37,7 +37,7 @@ async function buy(user, stock_symbol, amount) {
     // Check if the user does not have enough
     if (user_acc.funds < amount) {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'error_event', request);
+        await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
         console.log("Insufficient funds");
         return ({ error: "Insufficient funds" });
@@ -54,7 +54,7 @@ async function buy(user, stock_symbol, amount) {
     await user_acc.save();
 
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'user_command', request);
+    await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
     console.log("User after buy command:\n" + user_acc);
 
@@ -81,7 +81,7 @@ async function commit_buy(user) {
         // Check if the user does not have enough
         if (user_acc.funds < user_acc.pending_buy.amount) {
             // Create a transaction
-            await create_transaction(user_acc.user_id, user, 'error_event', request);
+            await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
             console.log("Insufficient funds");
             return ({ error: "Insufficient funds" });
@@ -112,7 +112,7 @@ async function commit_buy(user) {
         await user_acc.save();
 
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'user_command', request);
+        await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
         console.log("User after commit_buy command:\n" + user_acc);
 
@@ -120,7 +120,7 @@ async function commit_buy(user) {
     }
     else {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'error_event', request);
+        await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
         return ({ error: "Could not commit buy. No \'BUY\' command executed in the last 60 seconds."});
     }
@@ -154,13 +154,13 @@ async function cancel_buy(user) {
     // Only cancel a buy if it was performed in the last 60 seconds (i.e. 60,000ms)
     if (successFlag) {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'error_event', request);
+        await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
         return ({ error: "Nothing to cancel. No BUY command was executed in the last 60 seconds. Removing residual data."});
     }
     else {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'user_command', request);
+        await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
         return ({ success: "Buy canceled."});
     }
@@ -182,7 +182,7 @@ async function set_buy_amount(user, stock_symbol, amount) {
     // Verify user has enough funds to buy
     if (user_acc.funds < amount) {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'error_event', request);
+        await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
         console.log("Insufficient funds");
         return ({ error: "Insufficient funds" });
@@ -202,7 +202,7 @@ async function set_buy_amount(user, stock_symbol, amount) {
     await user_acc.save();
 
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'user_command', request);
+    await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
     console.log("Set buy trigger initialized");
     console.log("User after set_buy_amount command:\n" + user_acc + "\n" + buy_acc);
@@ -228,7 +228,7 @@ async function set_buy_trigger(user, stock_symbol, amount) {
     // Make sure there is a pending_set_buy set with the matching stock symbol
     if (buy_acc.pending_set_buy.stock_symbol !== stock_symbol) {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'error_event', request);
+        await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
         console.log(`There is no SET_BUY currently set for stock ${stock_symbol}`);
         return ({error: `There is no SET_BUY currently set for stock ${stock_symbol}`});
@@ -265,7 +265,7 @@ async function set_buy_trigger(user, stock_symbol, amount) {
     await user_acc.save();
 
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'user_command', request);
+    await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
     console.log(`Buy transaction was set at buy price: ${amount}`);
     //console.log(await Buy.findOne({ "username": user })); // Display buy account
@@ -277,7 +277,7 @@ async function cancel_set_buy(user, stock_symbol) {
     console.log("Trying to cancel automatic buy");
 
     const request = {
-        type: 'SET_BUY_TRIGGER',
+        type: 'CANCEL_SET_BUY',
         user: user,
         stock_symbol: stock_symbol,
         amount: 0
@@ -307,7 +307,7 @@ async function cancel_set_buy(user, stock_symbol) {
     // If trigger doesn't exists, do nothing
     if (!trigger) {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'error_event', request);
+        await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
         console.error(`There is no buy trigger for ${stock_symbol}`);
         return({error: `There is no buy trigger for ${stock_symbol}`});
@@ -325,7 +325,7 @@ async function cancel_set_buy(user, stock_symbol) {
     await user_acc.save();
 
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'user_command', request);
+    await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
     console.log(`Buy trigger for ${stock_symbol} was succesfully canceled`);
     console.log("User after cancel_set_buy command:\n" + user_acc + "\n" + buy_acc);
