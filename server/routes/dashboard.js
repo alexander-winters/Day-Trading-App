@@ -14,8 +14,11 @@ const { sell,
     cancel_set_sell,
     set_sell_trigger
 } = require('../../transaction-server/sell_transaction');
-const { add } = require('../../transaction-server/misc_transaction');
+const { add, display_summary } = require('../../transaction-server/misc_transaction');
 const { create_user } = require('../../server/db/db_functions/user_functions');
+const { create_transaction } = require('../db/db_functions/transaction_functions');
+const { dumplog } = require('../../transaction-server/dumplog');
+const User = require('../db/models/user');
 
 
 // dashboardRoutes is an instance of the express router.
@@ -55,7 +58,12 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
         }
     } else if (type === 'quote') {
         try {
+            //Get user account
+            const user_acc = await User.findOne({ username: user });
+
             const quote = await get_quote(user, stock_symbol);
+            // Create a transaction
+            await create_transaction(user_acc.user_id, user, 'quote_server', {}, quote, 'quote_server');
             res.json(quote);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -157,13 +165,14 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
         }
     } else if (type === 'dumplog') {
         try {
-
+            await dumplog(user);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     } else if (type === 'display_summary') {
         try {
-
+           const display = await display_summary(user);
+           res.json(display);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
