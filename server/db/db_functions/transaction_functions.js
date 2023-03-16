@@ -5,9 +5,16 @@ const connectDB = require('../conn');
 // Connect to MongoDB
 connectDB();
 
-async function create_transaction(userid, user, logType, request = {}) {
+async function create_transaction(userid, user, logType, request = {}, response = {}, server) {
     try {
-        const transaction = await Transaction({user_id: userid, username: user, log_type: logType, user_request: request});
+        const transaction = await Transaction({
+            user_id: userid, 
+            username: user, 
+            log_type: logType, 
+            user_request: request, 
+            server_response: response,
+            server: server
+        });
 
         await transaction.save();
 
