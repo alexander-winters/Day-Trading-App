@@ -43,16 +43,16 @@ const transaction_schema = new mongoose.Schema( {
         required: false
     },
     transaction_timestamp: {
-        type: Date,
+        type: Number,
         unique: false,
         required: false,
-        default: Date.now()
+        default: Math.floor(new Date().getTime())
     },
     transaction_expires: {
-        type: Date,
+        type: Number,
         unique: false,
         required: false,
-        default: Date.now() + (60 * 1000) 
+        default: Math.floor(new Date().getTime()) + (60 * 1000) 
     },
     error_event: {
         type: String,

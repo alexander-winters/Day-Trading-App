@@ -25,7 +25,7 @@ const user_schema = new mongoose.Schema({
     pending_buy: {
         stock_symbol: {
             type: String,
-            unique: true,
+            unique: false,
             default: undefined
         },
         amount: {

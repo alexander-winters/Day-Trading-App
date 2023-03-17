@@ -32,7 +32,7 @@ async function sell(user, stock_symbol, amount) {
     // Verify user has stocks owned 
     if ( !user_stock ) {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'error_event', request);
+        await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
         console.error("No stocks owned")
         return({error: "No stocks owned"});
@@ -41,20 +41,22 @@ async function sell(user, stock_symbol, amount) {
     // Verify user have enough stocks to sell
     if ( user_stock.quantity < sell_qty ) {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'error_event', request);
+        await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
         console.error("Insufficient stocks to sell");
         return({error: "Insufficient stocks to sell"});
     }
 
+    const now = Math.floor(new Date().getTime());
+
     // Create a sell_pending
     sell_acc.pending_sell.stock_symbol = stock_symbol;
     sell_acc.pending_sell.amount = amount;
     sell_acc.pending_sell.quantity = sell_qty;
-    sell_acc.pending_sell.expiration_time = Date.now() + (TIME_TO_EXPIRE * 1000);
+    sell_acc.pending_sell.expiration_time = now + (TIME_TO_EXPIRE * 1000);
 
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'user_command', request);
+    await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
     await sell_acc.save();
 
@@ -78,8 +80,10 @@ async function commit_sell(user) {
         amount: pending_sell.amount
     }
 
+    const now = Math.floor(new Date().getTime());
+
     // Check if there is a transaction pending
-    if (pending_sell && (Date.now() <= pending_sell.expiration_time)) {
+    if (Object.keys(pending_sell).length === 0 && (now <= pending_sell.expiration_time)) {
 
         // Update user stock owned
         user_acc.stocks_owned.find( stock => stock.stock_symbol === pending_sell.stock_symbol ).quantity -= pending_sell.quantity;
@@ -91,7 +95,7 @@ async function commit_sell(user) {
         await Sell.updateOne({ username: user }, {$unset: {'pending_sell':''}});
     
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'user_command', request);
+        await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
         await user_acc.save();
 
@@ -102,7 +106,7 @@ async function commit_sell(user) {
     }    
 
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'error_event', request);
+    await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
     console.error("No sell transaction initiated within 60 seconds");
     return({error: "No sell transaction initiated within 60 seconds"});
@@ -122,8 +126,9 @@ async function cancel_sell(user) {
         amount: pending_sell.amount
     }
 
+    const now = Math.floor(new Date().getTime());
     // Check if there is a transaction pending
-    if (pending_sell && (Date.now() <= pending_sell.expiration_time)) {
+    if (Object.keys(pending_sell).length === 0 && (now <= pending_sell.expiration_time)) {
         
         // Remove the pending sell
         await Sell.updateOne({ username: user }, {$unset: {'pending_sell':''}});
@@ -131,7 +136,7 @@ async function cancel_sell(user) {
         await user_acc.save();
 
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'user_command', request);
+        await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
         console.log("Sell transaction canceled");
         // console.log(await Sell.findOne({ username: user })); // Display sell account
@@ -139,7 +144,7 @@ async function cancel_sell(user) {
     }
     
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'error_event', request);
+    await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
     console.error("No sell transaction initiated within 60 seconds");
     return ({error: "No sell transaction initiated within 60 seconds"})
@@ -166,9 +171,9 @@ async function set_sell_amount(user, stock_symbol, amount) {
     const user_stock = user_acc.stocks_owned.find( stock => stock.stock_symbol === stock_symbol );
     
     // Verify user have enough stocks to sell
-    if ( user_stock.quantity < sell_qty ) {
+    if ( user_stock && user_stock.quantity < sell_qty ) {
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'error_event', request);
+        await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
         console.error("Insufficient stocks to sell");
         return({error: "Insufficient stocks to sell"});
@@ -180,7 +185,7 @@ async function set_sell_amount(user, stock_symbol, amount) {
     sell_acc.pending_set_sell.quantity = sell_qty;
 
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'user_command', request);
+    await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
     await sell_acc.save();
 
@@ -204,9 +209,7 @@ async function set_sell_trigger(user, stock_symbol, price) {
     const sell_acc = await Sell.findOne({ username: user });
 
     const pending_set_sell = sell_acc.pending_set_sell;
-
-    if (pending_set_sell) {
-        
+    if (Object.keys(pending_set_sell).length === 0) {
         // Create a sell_trigger
         sell_acc.sell_triggers.push({
             stock_symbol: pending_set_sell.stock_symbol,
@@ -222,7 +225,7 @@ async function set_sell_trigger(user, stock_symbol, price) {
         await Sell.updateOne({ username: user }, {$unset: {'pending_set_sell':''}});
 
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'user_command', request);
+        await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
         await user_acc.save();
         await sell_acc.save();
@@ -231,9 +234,8 @@ async function set_sell_trigger(user, stock_symbol, price) {
         // console.log(await Sell.findOne({ username: user })); // Display sell account
         return ({success: `Sell transaction was set at ${price}`});
     }
-
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'error_event', request);
+    await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
     console.error("Please initialize a set sell trigger first");
     return({error: "Please initialize a set sell trigger first"});
@@ -265,7 +267,7 @@ async function cancel_set_sell(user, stock_symbol, amount) {
         user_acc.stocks_owned.find( stock => stock.stock_symbol === trigger.stock_symbol ).quantity += trigger.quantity;
 
         // Create a transaction
-        await create_transaction(user_acc.user_id, user, 'user_command', request);
+        await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
         await user_acc.save();
 
@@ -275,7 +277,7 @@ async function cancel_set_sell(user, stock_symbol, amount) {
     }
 
     // Create a transaction
-    await create_transaction(user_acc.user_id, user, 'error_event', request);
+    await create_transaction(user_acc.user_id, user, 'error_event', request, {}, 'transaction_server');
 
     console.error(`There is no sell trigger for ${stock_symbol}`);
     return({error: `There is no sell trigger for ${stock_symbol}`});

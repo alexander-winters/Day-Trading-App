@@ -251,7 +251,7 @@ def send_request(transaction_id, params, session):
         
         body = {
             'type': 'dumplog',
-            'user': userid,
+            'user': None,
             'transaction_id': transaction_id,
             'stock_symbol': None,
             'amount': None,
@@ -292,17 +292,16 @@ def process_commands(transactions):
         adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
         session.mount('http://', adapter)
         
-        futures = []
+        #futures = []
         for transaction in transactions:
             print(transaction)
             transaction_id, params = transaction
-            futures.append(
-                executor.submit(send_request, transaction_id, params, session)
-            )
-            time.sleep(0.3)
-        # Wait for all requests to complete
-        for future in futures:
+            
+            future = executor.submit(send_request, transaction_id, params, session)
             future.result()
+        # Wait for all requests to complete
+        #for future in futures:
+            #future.result()
 
 
 def main():
