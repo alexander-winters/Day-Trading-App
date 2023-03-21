@@ -37,7 +37,6 @@ async function dumplog(username) {
                 `\t\t<timestamp>${result.transaction_timestamp}</timestamp>\n` +
                 `\t\t<server>${result.server}</server>\n` +
                 `\t\t<transactionNum>${result.transaction_id}</transactionNum>\n` +
-                '\t\t<command>QUOTE</command>\n' +
                 `\t\t<price>${result.server_response.quote_price}</price>\n` +
                 `\t\t<stockSymbol>${result.server_response.stock_symbol}</stockSymbol>\n` +
                 `\t\t<username>${result.server_response.username}</username>\n` +
