@@ -36,7 +36,7 @@ async function buy(user, stock_symbol, amount) {
         quote = JSON.parse(quote);
     }
 
-    console.log(quote)
+    //console.log(quote)
 
     let stock_quantity = amount / Number(quote.quote_price); // Calculates total quantity of stocks to buy
 
