@@ -6,12 +6,14 @@ This repository contains a Dockerfile for running Redis in a Docker container, a
 ## Building the Redis Docker image
 
 To build the Redis Docker image, run the following command in the root directory of this repository:
-`docker build -t my-redis-image .`
+
+  `docker build -t my-redis-image .`
 
 
 ## Starting the Redis container
 
 To start the Redis container, run the following command:
+
 `docker run --name my-redis-container -d redis`
 
 This will start a Redis container with the default configuration and give it the name `my-redis-container`.
@@ -20,18 +22,23 @@ This will start a Redis container with the default configuration and give it the
 ## Connecting to the Redis container using sh
 
 To connect to the Redis container using `sh` so that you can `chmod +x` the `set_default_ttl` script, use the following command:
+
 `docker exec -it my-redis-container sh`
+
 This will start a shell inside the Redis container.
 
 Once inside the container, navigate to `/usr/lib/redis/modules directory`:
+
 `cd /usr/lib/redis/modules`
 
 Execute:
+
 `chmod +x set_default_ttl.lua`
 
 Exit the container's shell by running the `exit` command.
 
 Restart the Redis container to apply the changes:
+
 `docker restart my-redis-container`
 
 
