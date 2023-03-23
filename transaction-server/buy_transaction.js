@@ -6,6 +6,12 @@ require("dotenv").config({ path: "../server/config.env" });
 const connectDB = require('../server/db/conn');
 const { create_transaction } = require('../server/db/db_functions/transaction_functions');
 
+const Redis = require('ioredis');
+const redis_client = new Redis({
+    host: 'localhost',
+    port: 6379
+});
+
 // Connect to MongoDB
 connectDB();
 
@@ -17,7 +23,21 @@ async function buy(user, stock_symbol, amount) {
     console.log("Trying to buy");
     console.log("Stock: " + stock_symbol + " for amount: " + amount);
 
-    const quote = await get_quote(user, stock_symbol);
+    // Check if the stock symbol exists in Redis
+    let quote = await redis_client.get(stock_symbol);
+
+    if (!quote) {
+        // If the stock symbol is not in Redis, fetch the quote object from the quote server
+        quote = await get_quote(user, stock_symbol);
+        // Add the stock symbol and its quote object to Redis with a TTL of 4 minutes (240 seconds)
+        await redis_client.setex(stock_symbol, 240, JSON.stringify(quote));
+    } else {
+        // If the stock symbol is in Redis, parse the quote object from a string into a JavaScript object
+        quote = JSON.parse(quote);
+    }
+
+    console.log(quote)
+
     let stock_quantity = amount / Number(quote.quote_price); // Calculates total quantity of stocks to buy
 
     const request = {
