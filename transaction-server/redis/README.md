@@ -14,7 +14,7 @@ To build the Redis Docker image, run the following command in the root directory
 
 To start the Redis container, run the following command:
 
-`docker run --name my-redis-container -d redis`
+`docker run --name my-redis-container -d -p 6379:6379 my-redis-image`
 
 This will start a Redis container with the default configuration and give it the name `my-redis-container`.
 
