@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 require("dotenv").config({ path: "./config.env" });
+const { start_trigger_timer } = require('../transaction-server/trigger_processing');
+
 const port = process.env.PORT || 5000;
 
 app.use(cors());
@@ -12,6 +14,7 @@ const connectDB = require("./db/conn");
 
 connectDB()
   .then(() => {
+    start_trigger_timer();
     app.listen(port, () => {
       console.log(`Server is running on port: ${port}`);
   });
