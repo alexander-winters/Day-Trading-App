@@ -5,6 +5,8 @@ const Buy = require('../server/db/models/buy');
 require("dotenv").config({ path: "../server/config.env" });
 const connectDB = require('../server/db/conn');
 const { create_transaction } = require('../server/db/db_functions/transaction_functions');
+const { create_trigger } = require('../server/db/db_functions/trigger_functions');
+const Trigger = require("../server/db/models/trigger");
 
 // Connect to MongoDB
 connectDB();
@@ -266,6 +268,13 @@ async function set_buy_trigger(user, stock_symbol, amount) {
     buy_acc.pending_set_buy.amount = undefined;
     buy_acc.pending_set_buy.quantity = undefined;
 
+    // Add to list of users who have triggers we need to process if not already there
+    const existing_trigger = await Trigger.findOne({username: buy_acc.username})
+    if (!existing_trigger) {
+        await create_trigger(buy_acc.username);
+        console.log('Created buy trigger watcher for user: ' + buy_acc.username);
+    }
+
     await buy_acc.save();
     await user_acc.save();
 
@@ -328,6 +337,13 @@ async function cancel_set_buy(user, stock_symbol) {
 
     await buy_acc.save();
     await user_acc.save();
+
+    // Delete buy trigger watcher for that user if no buy triggers remaining in user account
+    const existing_trigger = await Trigger.findOne({username: buy_acc.username})
+    if (existing_trigger && (buy_acc.buy_triggers === undefined || buy_acc.buy_triggers.length() <= 0)) {
+        await Trigger.deleteMany({username: buy_acc.username});
+        console.log('Deleted buy trigger watcher for user: ' + buy_acc.username);
+    }
 
     // Create a transaction
     await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
