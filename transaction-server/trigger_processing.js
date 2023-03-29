@@ -1,4 +1,10 @@
 const User = require('../server/db/models/user');
+const Buy = require('../server/db/models/buy');
+const Sell = require('../server/db/models/sell');
+const BuyTrigger = require('../server/db/models/buy_trigger');
+const SellTrigger = require('../server/db/models/sell_trigger');
+const { get_quote } = require("../quote-server/quote_server");
+
 //require("dotenv").config({ path: "../server/config.env" });
 const connectDB = require('../server/db/conn');
 
@@ -19,13 +25,128 @@ function stop_trigger_timer() {
     console.log('Stopped trigger processing timer.');
 }
 
-// TODO: Implement buy/sell trigger processing
 async function process_triggers() {
     const time = new Date(Date.now());
     console.log('Processing triggers - Time: ' + time.toISOString());
 
-    // TODO: Process buy/sell triggers
+    await manage_buy_triggers();
+    await manage_sell_triggers();
 
+    const time_end = new Date(Date.now());
+    console.log('Finished processing triggers - End Time: ' + time_end.toISOString());
+}
+
+async function manage_buy_triggers() {
+    const all_buy_trigger_watchers = await BuyTrigger.find({});
+
+    let trigger_watcher_deletion_list = [];
+
+    // For all buy accounts in the trigger watch list
+    for (const user_triggers of all_buy_trigger_watchers) {
+        const buy_acc = await Buy.findOne({ username: user_triggers.username });
+        
+        let user_deletion_list = [];
+
+        // For all buy triggers in the buy account
+        for (const trigger of buy_acc.buy_triggers) {
+
+            const quote_price = get_quote(buy_acc.username, trigger.stock_symbol);
+
+            if (quote_price === trigger.buy_price) {
+
+                // Buy stock and add to owned stocks
+                const user_acc = await User.findOne({ "username": buy_acc.username });
+
+                const cur_stock = user_acc.stocks_owned.findOne({ "stock_symbol": trigger.stock_symbol});
+
+                if (cur_stock) {
+                    cur_stock.quantity += trigger.quantity; // add new quantity to existing stock
+                } else {
+                    user_acc.stocks_owned.push({stock_symbol: trigger.stock_symbol, quantity: trigger.quantity}); // create new stock
+                }
+
+                await user_acc.save();
+
+                // Flag to delete trigger in the current user buy account
+                user_deletion_list.push(trigger);
+            }
+        }
+
+        // Delete all user account buy triggers that were purchased
+        for (t in user_deletion_list) {
+            let index = buy_acc.buy_triggers.indexOf(t);
+            if (index !== -1) {
+                buy_acc.buy_triggers.splice(index, 1);
+            }
+        }
+
+        // Save changes to buy account
+        await buy_acc.save();
+
+        // Flag to delete trigger watcher in the BuyTriggers
+        if (buy_acc.buy_triggers.length() === 0) {
+            trigger_watcher_deletion_list.push(buy_acc.username);
+        }
+    }
+
+    // Delete buy trigger watcher for the current user if no more triggers in buy account
+    for (username in trigger_watcher_deletion_list) {
+        BuyTrigger.deleteOne({ username: username });
+        await BuyTrigger.save();
+    }
+}
+
+async function manage_sell_triggers() {
+    const all_sell_trigger_watchers = await SellTrigger.find({});
+
+    let trigger_watcher_deletion_list = [];
+
+    // For all sell accounts in the trigger watch list
+    for (const user_triggers of all_sell_trigger_watchers) {
+        const sell_acc = await Sell.findOne({ username: user_triggers.username });
+        
+        let user_deletion_list = [];
+
+        // For all sell triggers in the sell account
+        for (const trigger of sell_acc.sell_triggers) {
+
+            const quote_price = get_quote(sell_acc.username, trigger.stock_symbol);
+
+            if (quote_price === trigger.sell_price) {
+
+                // Sell stock and add funds
+                const user_acc = await User.findOne({ "username": sell_acc.username });
+                user_acc.funds += trigger.amount;
+
+                await user_acc.save();
+
+                // Flag to delete trigger in the current user sell account
+                user_deletion_list.push(trigger);
+            }
+        }
+
+        // Delete all user account buy triggers that were sold
+        for (t in user_deletion_list) {
+            let index = sell_acc.sell_triggers.indexOf(t);
+            if (index !== -1) {
+                sell_acc.sell_triggers.splice(index, 1);
+            }
+        }
+
+        // Save changes to buy account
+        await sell_acc.save();
+
+        // Flag to delete trigger watcher in the SellTriggers
+        if (buy_acc.buy_triggers.length() === 0) {
+            trigger_watcher_deletion_list.push(sell_acc.username);
+        }
+    }
+
+    // Delete sell trigger watcher for the current user if no more triggers in sell account
+    for (username in trigger_watcher_deletion_list) {
+        SellTrigger.deleteOne({ username: username });
+        await SellTrigger.save();
+    }
 }
 
 module.exports = {
