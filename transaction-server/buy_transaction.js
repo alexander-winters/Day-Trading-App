@@ -268,15 +268,15 @@ async function set_buy_trigger(user, stock_symbol, amount) {
     buy_acc.pending_set_buy.amount = undefined;
     buy_acc.pending_set_buy.quantity = undefined;
 
+    await buy_acc.save();
+    await user_acc.save();
+
     // Add to list of users who have buy triggers we need to process if not already there
     const existing_buy_trigger = await BuyTrigger.findOne({username: buy_acc.username})
     if (!existing_buy_trigger) {
         await create_buy_trigger(buy_acc.username);
         console.log('Created buy trigger watcher for user: ' + buy_acc.username);
     }
-
-    await buy_acc.save();
-    await user_acc.save();
 
     // Create a transaction
     await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');

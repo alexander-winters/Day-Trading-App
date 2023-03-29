@@ -2,7 +2,7 @@ const User = require('../server/db/models/user');
 //require("dotenv").config({ path: "../server/config.env" });
 const connectDB = require('../server/db/conn');
 
-const trigger_process_interval_ms = 30000; // 30 seconds (in milliseconds)
+const TRIGGER_PROCESS_INTERVAL_MS = 30000; // 30 seconds (in milliseconds)
 
 let trigger_timer;
 
@@ -10,8 +10,8 @@ let trigger_timer;
 connectDB();
 
 function start_trigger_timer() {
-    console.log(`Started a ${trigger_process_interval_ms}ms timer to process buy and sell triggers.`);
-    trigger_timer = setInterval(process_triggers, trigger_process_interval_ms);
+    console.log(`Started a ${TRIGGER_PROCESS_INTERVAL_MS}ms timer to process buy and sell triggers.`);
+    trigger_timer = setInterval(process_triggers, TRIGGER_PROCESS_INTERVAL_MS);
 }
 
 function stop_trigger_timer() {
