@@ -50,14 +50,15 @@ async function manage_buy_triggers() {
         // For all buy triggers in the buy account
         for (const trigger of buy_acc.buy_triggers) {
 
-            const quote_price = get_quote(buy_acc.username, trigger.stock_symbol);
-
-            if (quote_price === trigger.buy_price) {
+            const quote_price = await get_quote(buy_acc.username, trigger.stock_symbol);
+            console.log(`While processing Buy trigger ${trigger.stock_symbol} for user ${buy_acc.username}, quote price is ${quote_price.quote_price}.`);
+            
+            if (quote_price.quote_price === trigger.buy_price) {
 
                 // Buy stock and add to owned stocks
                 const user_acc = await User.findOne({ "username": buy_acc.username });
 
-                const cur_stock = user_acc.stocks_owned.findOne({ "stock_symbol": trigger.stock_symbol});
+                const cur_stock = user_acc.stocks_owned.find(x => x.stock_symbol === trigger.stock_symbol);
 
                 if (cur_stock) {
                     cur_stock.quantity += trigger.quantity; // add new quantity to existing stock
@@ -66,6 +67,8 @@ async function manage_buy_triggers() {
                 }
 
                 await user_acc.save();
+
+                console.log(`BUY TRIGGER PROCESS: User ${user_acc.username} bought amount ${trigger.amount} of ${trigger.stock_symbol} at price point ${trigger.buy_price}.`);
 
                 // Flag to delete trigger in the current user buy account
                 user_deletion_list.push(trigger);
@@ -84,7 +87,7 @@ async function manage_buy_triggers() {
         await buy_acc.save();
 
         // Flag to delete trigger watcher in the BuyTriggers
-        if (buy_acc.buy_triggers.length() === 0) {
+        if (buy_acc.buy_triggers.length === 0) {
             trigger_watcher_deletion_list.push(buy_acc.username);
         }
     }
@@ -110,9 +113,11 @@ async function manage_sell_triggers() {
         // For all sell triggers in the sell account
         for (const trigger of sell_acc.sell_triggers) {
 
-            const quote_price = get_quote(sell_acc.username, trigger.stock_symbol);
+            const quote_price = await get_quote(sell_acc.username, trigger.stock_symbol);
 
-            if (quote_price === trigger.sell_price) {
+            console.log(`While processing Sell trigger ${trigger.stock_symbol} for user ${buy_acc.username}, quote price is ${quote_price.quote_price}.`);
+
+            if (quote_price.quote_price === trigger.sell_price) {
 
                 // Sell stock and add funds
                 const user_acc = await User.findOne({ "username": sell_acc.username });
@@ -120,6 +125,8 @@ async function manage_sell_triggers() {
 
                 await user_acc.save();
 
+                console.log(`SELL TRIGGER PROCESS: User ${user_acc.username} sold ${trigger.stock_symbol} and added $${trigger.amount} to account funds`);
+                
                 // Flag to delete trigger in the current user sell account
                 user_deletion_list.push(trigger);
             }
@@ -137,7 +144,7 @@ async function manage_sell_triggers() {
         await sell_acc.save();
 
         // Flag to delete trigger watcher in the SellTriggers
-        if (buy_acc.buy_triggers.length() === 0) {
+        if (buy_acc.buy_triggers.length === 0) {
             trigger_watcher_deletion_list.push(sell_acc.username);
         }
     }

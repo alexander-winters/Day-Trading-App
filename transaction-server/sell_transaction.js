@@ -283,7 +283,7 @@ async function cancel_set_sell(user, stock_symbol, amount) {
 
         // Delete sell trigger watcher for that user if no sell triggers remaining in user account
         const existing_sell_trigger = await SellTrigger.findOne({username: sell_acc.username})
-        if (existing_sell_trigger && (sell_acc.sell_triggers === undefined || sell_acc.sell_triggers.length() <= 0)) {
+        if (existing_sell_trigger && (sell_acc.sell_triggers === undefined || sell_acc.sell_triggers.length <= 0)) {
             await SellTrigger.deleteMany({username: sell_acc.username});
             console.log('Deleted sell trigger watcher for user: ' + sell_acc.username);
         }

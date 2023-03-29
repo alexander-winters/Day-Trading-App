@@ -340,7 +340,7 @@ async function cancel_set_buy(user, stock_symbol) {
 
     // Delete buy trigger watcher for that user if no buy triggers remaining in user account
     const existing_buy_trigger = await BuyTrigger.findOne({username: buy_acc.username})
-    if (existing_buy_trigger && (buy_acc.buy_triggers === undefined || buy_acc.buy_triggers.length() <= 0)) {
+    if (existing_buy_trigger && (buy_acc.buy_triggers === undefined || buy_acc.buy_triggers.length <= 0)) {
         await BuyTrigger.deleteMany({username: buy_acc.username});
         console.log('Deleted buy trigger watcher for user: ' + buy_acc.username);
     }
