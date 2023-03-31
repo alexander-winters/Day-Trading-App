@@ -2,8 +2,7 @@
 const { get_quote } = require("../quote-server/quote_server");
 const User = require('../server/db/models/user');
 const Buy = require('../server/db/models/buy');
-require("dotenv").config({ path: "../server/config.env" });
-const connectDB = require('../server/db/conn');
+//const { mongoose } = require('../server/db/conn');
 const { create_transaction } = require('../server/db/db_functions/transaction_functions');
 
 const Redis = require('ioredis');
@@ -11,9 +10,6 @@ const redis_client = new Redis({
     host: 'localhost',
     port: 6379
 });
-
-// Connect to MongoDB
-connectDB();
 
 const expireAfterSeconds = 60;
 

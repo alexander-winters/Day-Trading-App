@@ -1,10 +1,7 @@
 require("dotenv").config({ path: "../server/config.env" });
-const connectDB = require('../server/db/conn');
 const User = require('../server/db/models/user');
 const Transaction = require('../server/db/models/transaction');
 const fs = require('fs');
-
-connectDB();
 
 async function dumplog(username) {
     // Create instance of 'Query' for building queries

@@ -1,8 +1,6 @@
 const { get_quote } = require("../quote-server/quote_server");
 const User = require("../server/db/models/user");
 const Sell = require('../server/db/models/sell');
-require("dotenv").config({ path: "../server/config.env" });
-const connectDB = require('../server/db/conn');
 const { create_transaction } = require('../server/db/db_functions/transaction_functions');
 const TIME_TO_EXPIRE = 60;
 
@@ -12,8 +10,6 @@ const redis_client = new Redis({
     port: 6379
 });
 
-// Connect to db
-connectDB();
 
 async function sell(user, stock_symbol, amount) {
     // Check if the stock symbol exists in Redis
