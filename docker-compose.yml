@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  client:
+    build: ./client
+    ports: 
+      - "5173:5173"
+    depends_on:
+      - server
+  
+  mongo:
+    build: ./mymongo
+    ports:
+      - "27017:27017"
+
+  redis:
+    build:
+      context: .
+      dockerfile: transaction-server/redis
+    ports:
+      - "6379:6379"
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+      - redis
+
+  nginx:
+    build:
+      context: .
+      dockerfile: server/nginx
+    ports:
+      - "80:80"
