@@ -1,9 +1,4 @@
 const Transaction = require('../models/transaction');
-require("dotenv").config({ path: "../../config.env" });
-const connectDB = require('../conn');
-
-// Connect to MongoDB
-connectDB();
 
 async function create_transaction(userid, user, logType, request = {}, response = {}, server) {
     try {
