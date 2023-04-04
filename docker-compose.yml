@@ -12,7 +12,9 @@ services:
       - server
   
   mongo:
-    build: ./mymongo
+    build:
+      context: ./server/db
+      dockerfile: Dockerfile
     container_name: mymongo-container
     ports:
       - "27017:27017"
@@ -21,8 +23,8 @@ services:
 
   redis:
     build:
-      context: .
-      dockerfile: transaction-server/redis
+      context: ./transaction-server/redis
+      dockerfile: Dockerfile
     container_name: myredis-container
     ports:
       - "6379:6379"
@@ -34,7 +36,7 @@ services:
       context: .
       dockerfile: server/Dockerfile
     container_name: web-server-container
-    command: pm2-runtime start ecosystem.config.js
+    command: pm2-runtime start server/ecosystem.config.js
     ports:
       - "5000:5000"
     networks:
@@ -45,8 +47,8 @@ services:
 
   nginx:
     build:
-      context: .
-      dockerfile: server/nginx
+      context: ./server/nginx
+      dockerfile: Dockerfile
     container_name: nginx-container
     ports:
       - "80:80"

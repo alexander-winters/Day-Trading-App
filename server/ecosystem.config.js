@@ -2,7 +2,7 @@ module.exports = {
     apps: [
       {
         name: 'my-server',
-        script: 'server.js',
+        script: 'server/server.js',
         instances: 'max',
         autorestart: true,
         watch: false,
