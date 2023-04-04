@@ -164,7 +164,18 @@ async function cancel_sell(user) {
 }
 
 async function set_sell_amount(user, stock_symbol, amount) {
-    const quote = await quote_server.get_quote(stock_symbol, user);
+    // Check if the stock symbol exists in Redis
+    let quote = await redis_client.get(stock_symbol);
+
+    if (!quote) {
+        // If the stock symbol is not in Redis, fetch the quote object from the quote server
+        quote = await get_quote(user, stock_symbol);
+        // Add the stock symbol and its quote object to Redis with a TTL of 4 minutes (240 seconds)
+        await redis_client.setex(stock_symbol, 240, JSON.stringify(quote));
+    } else {
+        // If the stock symbol is in Redis, parse the quote object from a string into a JavaScript object
+        quote = JSON.parse(quote);
+    }
     const sell_qty = amount/quote.quote_price;
 
     const request = {
