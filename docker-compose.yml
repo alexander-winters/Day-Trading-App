@@ -38,7 +38,14 @@ services:
     container_name: web-server-container
     command: pm2-runtime start server/ecosystem.config.js
     ports:
-      - "5000:5000"
+      - "5001:5001"
+      - "5002:5002"
+      - "5003:5003"
+      - "5004:5004"
+      - "5005:5005"
+      - "5006:5006"
+      - "5007:5007"
+      - "5008:5008"
     networks:
       - my-network
     depends_on:
