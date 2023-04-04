@@ -7,7 +7,7 @@ from requests.sessions import Session
 from threading import local
 from concurrent.futures import ThreadPoolExecutor
 
-URL = 'http://localhost:5000/dashboard'
+URL = 'http://localhost:80/dashboard'
 
 def send_request(transaction_id, params, session):
     cmd = params[0]

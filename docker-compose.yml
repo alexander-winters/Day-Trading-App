@@ -51,6 +51,8 @@ services:
     depends_on:
       - mongo
       - redis
+    volumes:
+      - ./console/logs:/app/logs
 
   nginx:
     build:
@@ -59,6 +61,8 @@ services:
     container_name: nginx-container
     ports:
       - "80:80"
+    links:
+      - server:web-server-container
     networks:
       - my-network
 
