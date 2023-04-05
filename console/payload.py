@@ -290,7 +290,7 @@ def process_commands(transactions, max_workers):
         local_session = local()
         # Create a session with a connection pool to reuse TCP connections
         session = create_session(local_session)
-        adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
+        adapter = requests.adapters.HTTPAdapter(pool_connections=1, pool_maxsize=1)
         session.mount('http://', adapter)
         
         for transaction in transactions:

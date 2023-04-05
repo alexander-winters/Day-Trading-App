@@ -165,7 +165,8 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
         }
     } else if (type === 'dumplog') {
         try {
-            await dumplog(user);
+            const dumplog = await dumplog(user);
+            res.json(dumplog);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
