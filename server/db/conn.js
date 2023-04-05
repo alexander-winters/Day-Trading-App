@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const url = process.env.ATLAS_URI
+const url = 'mongodb://mymongo-container:27017/test'
 
 const connectDB = async () => {
   try {

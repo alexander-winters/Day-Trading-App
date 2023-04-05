@@ -1,10 +1,5 @@
-require("dotenv").config({ path: "../server/config.env" });
-const connectDB = require('../server/db/conn');
-const User = require('../server/db/models/user');
 const Transaction = require('../server/db/models/transaction');
 const fs = require('fs');
-
-connectDB();
 
 async function dumplog(username) {
     // Create instance of 'Query' for building queries
@@ -26,7 +21,7 @@ async function dumplog(username) {
     try {
         const results = await query.exec();
         // Write the dumplog file
-        fs.writeFileSync('./dumplog.xml', "<?xml version='1.0'?>\n<log>\n");
+        fs.writeFileSync('/app/logs/dumplog.xml', "<?xml version='1.0'?>\n<log>\n");
         // Iterate through each row of our query results
         results.forEach(result => {
             let log = result.log_type;
@@ -122,9 +117,9 @@ async function dumplog(username) {
       
                 sublog = sublog.concat("\t</debugEvent>\n");
             }
-            fs.appendFileSync('dumplog.xml', sublog);
+            fs.appendFileSync('/app/logs/dumplog.xml', sublog);
         });
-        fs.appendFileSync('./dumplog.xml', "</log>");
+        fs.appendFileSync('/app/logs/dumplog.xml', "</log>");
         console.log("Dumplog Ready");
 
     } catch (err) {
@@ -133,6 +128,4 @@ async function dumplog(username) {
     }
 }
 
-module.exports = {
-    dumplog
-};
+module.exports = { dumplog };

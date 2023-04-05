@@ -1,11 +1,6 @@
 const User = require('../models/user');
-require("dotenv").config({ path: "../../config.env" });
-const connectDB = require('../conn')
 const { create_buy_account } = require('./buy_functions');
 const { create_sell_account } = require('./sell_functions');
-
-// Connect to MongoDB
-connectDB();
 
 async function create_user(username) {
     try {

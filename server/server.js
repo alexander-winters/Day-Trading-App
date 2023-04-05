@@ -1,10 +1,9 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-require("dotenv").config({ path: "./config.env" });
 const { start_trigger_timer } = require('../transaction-server/trigger_processing');
 
-const port = process.env.PORT || 5000;
+const port = (500 + process.env.NODE_APP_INSTANCE) || 5000;
 
 app.use(cors());
 app.use(express.json());

@@ -1,9 +1,4 @@
 const Buy = require('../models/buy');
-require("dotenv").config({ path: "../../config.env" });
-const connectDB = require('../conn')
-
-// Connect to MongoDB
-connectDB();
 
 async function create_buy_account(username) {
     try {

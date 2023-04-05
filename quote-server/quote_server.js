@@ -47,4 +47,4 @@ async function get_quote(user, stock_symbol) {
     return quote_obj;
 }
 
-module.exports = {get_quote}
+module.exports = { get_quote }

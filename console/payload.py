@@ -1,12 +1,13 @@
 import time
 import json
 import sys
+import os
 import requests
 from requests.sessions import Session
 from threading import local
 from concurrent.futures import ThreadPoolExecutor
 
-URL = 'http://localhost:5000/dashboard'
+URL = 'http://localhost:80/dashboard'
 
 def send_request(transaction_id, params, session):
     cmd = params[0]
@@ -282,27 +283,22 @@ def create_session(local_session) -> Session:
     return local_session.session
 
 
-def process_commands(transactions):
-    with ThreadPoolExecutor(max_workers=10) as executor:
+def process_commands(transactions, max_workers):
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Use a local session object for each thread to prevent collisions
         # when accessing the API concurrently
         local_session = local()
         # Create a session with a connection pool to reuse TCP connections
         session = create_session(local_session)
-        adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
+        adapter = requests.adapters.HTTPAdapter(pool_connections=45, pool_maxsize=45)
         session.mount('http://', adapter)
         
-        #futures = []
         for transaction in transactions:
             print(transaction)
             transaction_id, params = transaction
             
             future = executor.submit(send_request, transaction_id, params, session)
             future.result()
-        # Wait for all requests to complete
-        #for future in futures:
-            #future.result()
-
 
 def main():
     if len(sys.argv) > 1:
@@ -315,12 +311,14 @@ def main():
     with open(filename, 'r') as f:
         for line in f:
             transaction_id, params = line.strip().split(' ', 1)
-            transaction_id = transaction_id[1:-1] # Remove square brackets
+            transaction_id = transaction_id[1:-1]  # Remove square brackets
             params = params.split(',')
             transactions.append((transaction_id, params))
 
+    max_workers = os.cpu_count()
+
     start = time.perf_counter()
-    process_commands(transactions)
+    process_commands(transactions, max_workers)
     elapsed = time.perf_counter() - start
     print(f"Elapsed time: {elapsed:0.2f} seconds")
 
