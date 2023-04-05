@@ -75,16 +75,10 @@ async function manage_buy_triggers() {
             }
         }
 
-        console.log('buy user_deletion_list at deletion time = ' + user_deletion_list);
+        //console.log('buy user_deletion_list at deletion time = ' + user_deletion_list);
 
         // Delete all user account buy triggers that were purchased
         for (let t in user_deletion_list) {
-            console.log('BUY: I am in the user_deletion_list loop!');
-            console.log('t =');
-            console.log(t);
-            console.log('user_deletion_list[t].stock_symbol =');
-            console.log(user_deletion_list[t].stock_symbol);
-
             // Remove the buy trigger
             await Buy.updateOne({ username: buy_acc.username }, {$pull: {'buy_triggers': {stock_symbol: `${user_deletion_list[t].stock_symbol}`}}});
         }
@@ -92,8 +86,8 @@ async function manage_buy_triggers() {
         // Save changes to buy account
         await buy_acc.save();
 
-        console.log('user.buy_triggers after deletion:');
-        console.log(buy_acc.buy_triggers);
+        //console.log('user.buy_triggers after deletion:');
+        //console.log(buy_acc.buy_triggers);
 
         // Flag to delete trigger watcher in the BuyTriggers
         if (buy_acc.buy_triggers.length === 0) {
@@ -101,12 +95,12 @@ async function manage_buy_triggers() {
         }
     }
 
-    console.log('buy trigger_watcher_deletion_list at deletion time = ' + trigger_watcher_deletion_list);
-    console.log(trigger_watcher_deletion_list);
+    //console.log('buy trigger_watcher_deletion_list at deletion time = ' + trigger_watcher_deletion_list);
+    //console.log(trigger_watcher_deletion_list);
+
     // Delete buy trigger watcher for the current user if no more triggers in buy account
     for (let username in trigger_watcher_deletion_list) {
         await BuyTrigger.deleteOne({ username: trigger_watcher_deletion_list[username] });
-        //await BuyTrigger.save();
     }
 }
 
@@ -143,16 +137,10 @@ async function manage_sell_triggers() {
             }
         }
 
-        console.log('sell user_deletion_list at deletion time = ' + user_deletion_list);
+        //console.log('sell user_deletion_list at deletion time = ' + user_deletion_list);
 
         // Delete all user account buy triggers that were sold
         for (let t in user_deletion_list) {
-            console.log('SELL: I am in the user_deletion_list loop!');
-            console.log('t =');
-            console.log(t);
-            console.log('user_deletion_list[t].stock_symbol =');
-            console.log(user_deletion_list[t].stock_symbol);
-
             // Remove the sell trigger
             await Sell.updateOne({ username: sell_acc.username }, {$pull: {'sell_triggers': {stock_symbol: `${user_deletion_list[t].stock_symbol}`}}});
         }
@@ -160,8 +148,8 @@ async function manage_sell_triggers() {
         // Save changes to buy account
         await sell_acc.save();
 
-        console.log('user.sell_triggers after deletion:');
-        console.log(sell_acc.sell_triggers);
+        //console.log('user.sell_triggers after deletion:');
+        //console.log(sell_acc.sell_triggers);
 
         // Flag to delete trigger watcher in the SellTriggers
         if (sell_acc.sell_triggers.length === 0) {
@@ -169,13 +157,12 @@ async function manage_sell_triggers() {
         }
     }
 
-    console.log('sell trigger_watcher_deletion_list at deletion time = ' + trigger_watcher_deletion_list);
-    console.log(trigger_watcher_deletion_list);
+    //console.log('sell trigger_watcher_deletion_list at deletion time = ' + trigger_watcher_deletion_list);
+    //console.log(trigger_watcher_deletion_list);
 
     // Delete sell trigger watcher for the current user if no more triggers in sell account
     for (let username in trigger_watcher_deletion_list) {
         await SellTrigger.deleteOne({ username: trigger_watcher_deletion_list[username] });
-        //await SellTrigger.save();
     }
 }
 
