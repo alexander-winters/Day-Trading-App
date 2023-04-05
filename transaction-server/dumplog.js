@@ -128,6 +128,4 @@ async function dumplog(username) {
     }
 }
 
-module.exports = {
-    dumplog
-};
+module.exports = { dumplog };
