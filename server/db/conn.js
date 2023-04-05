@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const url = 'mongodb://localhost:27017/test'
+const url = 'mongodb://mymongo-container:27017/test'
 
 const connectDB = async () => {
   try {

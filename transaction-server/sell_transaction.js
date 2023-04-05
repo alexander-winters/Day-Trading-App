@@ -6,7 +6,7 @@ const TIME_TO_EXPIRE = 60;
 
 const Redis = require('ioredis');
 const redis_client = new Redis({
-    host: 'localhost',
+    host: 'myredis-container',
     port: 6379
 });
 

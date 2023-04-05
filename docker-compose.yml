@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  client:
+    build: ./client
+    container_name: client-container
+    ports: 
+      - "5173:5173"
+    networks:
+      - my-network
+    depends_on:
+      - server
+  
+  mongo:
+    build:
+      context: ./server/db
+      dockerfile: Dockerfile
+    container_name: mymongo-container
+    ports:
+      - "27017:27017"
+    networks:
+      - my-network
+
+  redis:
+    build:
+      context: ./transaction-server/redis
+      dockerfile: Dockerfile
+    container_name: myredis-container
+    ports:
+      - "6379:6379"
+    networks:
+      - my-network
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: web-server-container
+    command: pm2-runtime start server/ecosystem.config.js
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+      - "5002:5002"
+      - "5003:5003"
+      - "5004:5004"
+      - "5005:5005"
+      - "5006:5006"
+      - "5007:5007"
+    networks:
+      - my-network
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - ./console/logs:/app/logs
+
+  nginx:
+    build:
+      context: ./server/nginx
+      dockerfile: Dockerfile
+    container_name: nginx-container
+    ports:
+      - "80:80"
+    links:
+      - server:web-server-container
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

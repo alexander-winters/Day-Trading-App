@@ -7,7 +7,7 @@ const { create_transaction } = require('../server/db/db_functions/transaction_fu
 
 const Redis = require('ioredis');
 const redis_client = new Redis({
-    host: 'localhost',
+    host: 'myredis-container',
     port: 6379
 });
 
