@@ -212,7 +212,7 @@ async function set_sell_trigger(user, stock_symbol, price) {
     const sell_acc = await Sell.findOne({ username: user });
 
     const pending_set_sell = sell_acc.pending_set_sell;
-    if (Object.keys(pending_set_sell).length === 0) {
+    if (Object.keys(pending_set_sell).length !== 0) {
         // Create a sell_trigger
         sell_acc.sell_triggers.push({
             stock_symbol: pending_set_sell.stock_symbol,
