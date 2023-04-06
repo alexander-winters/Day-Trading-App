@@ -2,6 +2,9 @@ const { get_quote } = require("../quote-server/quote_server");
 const User = require("../server/db/models/user");
 const Sell = require('../server/db/models/sell');
 const { create_transaction } = require('../server/db/db_functions/transaction_functions');
+const { create_sell_trigger } = require('../server/db/db_functions/sell_trigger_functions');
+const SellTrigger = require("../server/db/models/sell_trigger");
+
 const TIME_TO_EXPIRE = 60;
 
 const Redis = require('ioredis');
@@ -233,7 +236,7 @@ async function set_sell_trigger(user, stock_symbol, price) {
     const sell_acc = await Sell.findOne({ username: user });
 
     const pending_set_sell = sell_acc.pending_set_sell;
-    if (Object.keys(pending_set_sell).length === 0) {
+    if (Object.keys(pending_set_sell).length !== 0) {
         // Create a sell_trigger
         sell_acc.sell_triggers.push({
             stock_symbol: pending_set_sell.stock_symbol,
@@ -253,6 +256,13 @@ async function set_sell_trigger(user, stock_symbol, price) {
 
         await user_acc.save();
         await sell_acc.save();
+
+         // Add to list of users who have sell triggers we need to process if not already there
+        const existing_sell_trigger = await SellTrigger.findOne({username: sell_acc.username})
+        if (!existing_sell_trigger) {
+            await create_sell_trigger(sell_acc.username);
+            console.log('Created sell trigger watcher for user: ' + sell_acc.username);
+        }
         
         console.log(`Sell transaction was set at sell price: ${price}`);
         // console.log(await Sell.findOne({ username: user })); // Display sell account
@@ -294,6 +304,13 @@ async function cancel_set_sell(user, stock_symbol, amount) {
         await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
         await user_acc.save();
+
+        // Delete sell trigger watcher for that user if no sell triggers remaining in user account
+        const existing_sell_trigger = await SellTrigger.findOne({username: sell_acc.username})
+        if (existing_sell_trigger && (sell_acc.sell_triggers === undefined || sell_acc.sell_triggers.length <= 0)) {
+            await SellTrigger.deleteMany({username: sell_acc.username});
+            console.log('Deleted sell trigger watcher for user: ' + sell_acc.username);
+        }
 
         console.log("Sell trigger was successfully canceled");
         // console.log(await Sell.findOne({ username: user })); // Display sell account

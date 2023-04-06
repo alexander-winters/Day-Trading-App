@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const { start_trigger_timer } = require('../transaction-server/trigger_processing');
+
 const port = (500 + process.env.NODE_APP_INSTANCE) || 5000;
 
 app.use(cors());
@@ -11,6 +13,7 @@ const connectDB = require("./db/conn");
 
 connectDB()
   .then(() => {
+    start_trigger_timer();
     app.listen(port, () => {
       console.log(`Server is running on port: ${port}`);
   });

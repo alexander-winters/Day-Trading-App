@@ -4,6 +4,8 @@ const User = require('../server/db/models/user');
 const Buy = require('../server/db/models/buy');
 //const { mongoose } = require('../server/db/conn');
 const { create_transaction } = require('../server/db/db_functions/transaction_functions');
+const { create_buy_trigger } = require('../server/db/db_functions/buy_trigger_functions');
+const BuyTrigger = require("../server/db/models/buy_trigger");
 
 const Redis = require('ioredis');
 const redis_client = new Redis({
@@ -285,6 +287,13 @@ async function set_buy_trigger(user, stock_symbol, amount) {
     await buy_acc.save();
     await user_acc.save();
 
+    // Add to list of users who have buy triggers we need to process if not already there
+    const existing_buy_trigger = await BuyTrigger.findOne({username: buy_acc.username})
+    if (!existing_buy_trigger) {
+        await create_buy_trigger(buy_acc.username);
+        console.log('Created buy trigger watcher for user: ' + buy_acc.username);
+    }
+
     // Create a transaction
     await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
 
@@ -344,6 +353,13 @@ async function cancel_set_buy(user, stock_symbol) {
 
     await buy_acc.save();
     await user_acc.save();
+
+    // Delete buy trigger watcher for that user if no buy triggers remaining in user account
+    const existing_buy_trigger = await BuyTrigger.findOne({username: buy_acc.username})
+    if (existing_buy_trigger && (buy_acc.buy_triggers === undefined || buy_acc.buy_triggers.length <= 0)) {
+        await BuyTrigger.deleteMany({username: buy_acc.username});
+        console.log('Deleted buy trigger watcher for user: ' + buy_acc.username);
+    }
 
     // Create a transaction
     await create_transaction(user_acc.user_id, user, 'user_command', request, {}, 'transaction_server');
