@@ -36,8 +36,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
 
     
     elif cmd == 'QUOTE':
@@ -55,8 +56,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
     
     elif cmd == 'BUY':
         userid = args[0]
@@ -74,8 +76,9 @@ def send_request(transaction_id, params, session):
         
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
     
     elif cmd == 'COMMIT_BUY':
         userid = args[0]
@@ -91,8 +94,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
     
     elif cmd == 'CANCEL_BUY':
         userid = args[0]
@@ -108,8 +112,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
     
     elif cmd == 'SELL':
         userid = args[0]
@@ -127,8 +132,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
     
     elif cmd == 'COMMIT_SELL':
         userid = args[0]
@@ -144,8 +150,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
     
     elif cmd == 'CANCEL_SELL':
         userid = args[0]
@@ -161,8 +168,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
     
     elif cmd == 'SET_BUY_AMOUNT':
 
@@ -181,8 +189,9 @@ def send_request(transaction_id, params, session):
         
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
 
     elif cmd == 'CANCEL_SET_BUY':
 
@@ -200,8 +209,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
 
     elif cmd == 'SET_BUY_TRIGGER':
 
@@ -220,8 +230,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
 
     elif cmd == 'SET_SELL_AMOUNT':
 
@@ -240,8 +251,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
 
     elif cmd == 'SET_SELL_TRIGGER':
 
@@ -260,8 +272,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
 
     elif cmd == 'CANCEL_SET_SELL':
 
@@ -279,8 +292,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
 
     elif cmd == 'DUMPLOG' and len(args) > 1:
 
@@ -298,8 +312,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
 
     elif cmd == 'DUMPLOG':
 
@@ -316,8 +331,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
      
     elif cmd == 'DISPLAY_SUMMARY':
 
@@ -334,8 +350,9 @@ def send_request(transaction_id, params, session):
 
         r = session.post(URL, json=body)
         request_times[cmd].append(time.perf_counter() - request_start)
+        request_sent = time.perf_counter()
         if r:
-            response_times[cmd].append(time.perf_counter() - request_start)
+            response_times[cmd].append(request_sent - request_start)
 
 
 def create_session(local_session) -> Session:
