@@ -4,6 +4,7 @@ import sys
 import asyncio
 import httpx
 import statistics
+from collections import defaultdict
 
 URL = 'http://localhost:80/dashboard'
 cmds = ['ADD', 'QUOTE', 'BUY', 'COMMIT_BUY', 'CANCEL_BUY', 'SELL', 'COMMIT_SELL', 'CANCEL_SELL', 'SET_BUY_AMOUNT',
@@ -350,7 +351,7 @@ async def send_request(transaction_id, params, session):
             response_times[cmd].append(request_sent - request_start)
 
     elif cmd == 'DUMPLOG' and len(args) > 1:
-
+        print("DUMPLOG")
         userid = args[0]
         filename = args[1]
         
@@ -374,6 +375,7 @@ async def send_request(transaction_id, params, session):
             response_times[cmd].append(request_sent - request_start)
 
     elif cmd == 'DUMPLOG':
+        print("DUMPLOG")
 
         filename = args[0]
         
@@ -419,16 +421,23 @@ async def send_request(transaction_id, params, session):
         if r:
             response_times[cmd].append(request_sent - request_start)
 
+def group_transactions_by_user(transactions):
+    user_transactions = defaultdict(list)
+    for transaction_id, params in transactions:
+        user = params[1]
+        user_transactions[user].append((transaction_id, params))
+    return user_transactions
+
+async def process_user_commands(user_transactions, session):
+    for transaction_id, params in user_transactions:
+        print(transaction_id, params)
+        await send_request(transaction_id, params, session)
+
 
 async def process_commands(transactions):
     async with httpx.AsyncClient() as session:
-        tasks = []
-        for transaction in transactions:
-            print(transaction)
-            transaction_id, params = transaction
-            task = asyncio.ensure_future(send_request(transaction_id, params, session))
-            tasks.append(task)
-
+        user_transactions = group_transactions_by_user(transactions)
+        tasks = [process_user_commands(transactions, session) for transactions in user_transactions.values()]
         await asyncio.gather(*tasks)
 
 
@@ -446,7 +455,6 @@ async def main():
             transaction_id = transaction_id[1:-1]  # Remove square brackets
             params = params.split(',')
             transactions.append((transaction_id, params))
-
 
     start = time.perf_counter()
     await process_commands(transactions)
