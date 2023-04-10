@@ -15,7 +15,6 @@ const { sell,
     set_sell_trigger
 } = require('../../transaction-server/sell_transaction');
 const { add, display_summary } = require('../../transaction-server/misc_transaction');
-const { create_user } = require('../../server/db/db_functions/user_functions');
 const { create_transaction } = require('../db/db_functions/transaction_functions');
 const { dumplog } = require('../../transaction-server/dumplog');
 const User = require('../db/models/user');
@@ -26,9 +25,7 @@ const User = require('../db/models/user');
 // The router will be added as a middleware and will take control of requests starting with path /dashboard.
 const dashboardRoutes = express.Router();
 
-let previous_stock_symbol = '';
-
-dashboardRoutes.route('/dashboard').post(async (req, res) => {
+dashboardRoutes.route('/dashboard').post(async (req, res, next) => {
     const { type, // Command 
             user, // user_id
             transaction_id,
@@ -39,138 +36,76 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
 
     
     console.log( `Type: ${type}, User: ${user}, Symbol: ${stock_symbol}, Amount: ${amount}, Filename: ${filename}`);
-    if (type === 'add') {
-        try {
-            const user_add = await add(user, amount);
-            res.json(user_add);
-            //res.json({myValue: 3456});
+    
+    try {
+        let result;
 
-        } catch (err) {
-            res.status(500).json({ error: err.message });
+        switch (type) {
+            case 'add':
+                result = await add(user, amount)
+                break;
+            case 'quote':
+                // Get user account
+                user_acc = await User.findOne({ username: user });
+                // Get quote
+                result = await get_quote(user, stock_symbol);
+                // Create transaction
+                await create_transaction(user_acc.user_id, user, 'quote-server', {}, result, 'quote_server');
+                break;
+            case 'buy':
+                result = await buy(user, stock_symbol, amount);
+                break;
+            case 'commit_buy':
+                result = await commit_buy(user);
+                break;
+            case 'sell':
+                result = await sell(user, stock_symbol, amount);
+                break;
+            case 'commit_sell':
+                result = await commit_sell(user);
+                break;
+            case 'cancel_sell':
+                result = await cancel_sell(user);
+                break;
+            case 'set_buy_amount':
+                result = await set_buy_amount(user, stock_symbol, amount);
+                break;
+            case 'cancel_set_buy':
+                result = await cancel_set_buy(user, stock_symbol);
+                break;
+            case 'set_buy_trigger':
+                result = await set_buy_trigger(user, stock_symbol, amount);
+                break;
+            case 'set_sell_amount':
+                result = await set_sell_amount(user, stock_symbol, amount);
+                break;
+            case 'set_sell_trigger':
+                result = await set_sell_trigger(user, stock_symbol, amount);
+                break;
+            case 'cancel_set_sell':
+                result = await cancel_set_sell(user, stock_symbol, amount);
+                break;
+            case 'dumplog':
+                await dumplog(user);
+                result = res.json({ message: "Dumplog Complete" });
+                break;
+            case 'display_summary':
+                result = await display_summary(user);
+                break;
+            default:
+                return res.status(400).json({ error: "Invalid request type" });
         }
-    } else if (type === 'quote') {
-        try {
-            //Get user account
-            const user_acc = await User.findOne({ username: user });
 
-            const quote = await get_quote(user, stock_symbol);
-            // Create a transaction
-            await create_transaction(user_acc.user_id, user, 'quote_server', {}, quote, 'quote_server');
-            res.json(quote);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'buy') {
-        try {
-            const user_buy = await buy(user, stock_symbol, amount);
-            res.json(user_buy);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'commit_buy') {
-        try {
-            const user_commit_buy = await commit_buy(user)
-            res.json(user_commit_buy);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'cancel_buy') {
-        try {
-            const user_cancel_buy = await cancel_buy(user)
-            res.json(user_cancel_buy);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'sell') {
-        try {
-            const user_sell = await sell(user, stock_symbol, amount);
-            res.json(user_sell);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'commit_sell') {
-        try {
-            const user_commit_sell = await commit_sell(user);
-            res.json(user_commit_sell);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'cancel_sell') {
-        try {
-            const user_cancel_sell = await cancel_sell(user);
-            res.json(user_cancel_sell);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'set_buy_amount') {
-        try {
-            const user_set_buy = await set_buy_amount(user, stock_symbol, amount);
-            res.json(user_set_buy);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'cancel_set_buy') {
-        try {
-            const user_cancel_set_buy = await cancel_set_buy(user, stock_symbol);
-            res.json(user_cancel_set_buy);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'set_buy_trigger') {
-        try {
-            const user_set_buy_trigger = await set_buy_trigger(user, stock_symbol, amount);
-            res.json(user_set_buy_trigger);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'set_sell_amount') {
-        try {
-            const user_set_sell_amount = await set_sell_amount(user, stock_symbol, amount);
-            res.json(user_set_sell_amount);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'set_sell_trigger') {
-        try {
-            const user_set_sell_trigger = await set_sell_trigger(user, stock_symbol, amount);
-            res.json(user_set_sell_trigger);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'cancel_set_sell') {
-        try {
-            const user_cancel_set_sell = await cancel_set_sell(user, stock_symbol, amount);
-            res.json(user_cancel_set_sell);
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'dumplog') {
-        try {
-            await dumplog(user);
-            res.json({ message: 'Dumplog Complete' });
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } else if (type === 'display_summary') {
-        try {
-           const display = await display_summary(user);
-           res.json(display);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    } 
+        res.json(result);
+    } catch (err) {
+        next(err); // Pass the error to the error handling middleware
+    }
 });
 
+// Error handling middleware
+dashboardRoutes.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+})
 
 module.exports = dashboardRoutes;

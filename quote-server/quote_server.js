@@ -28,7 +28,8 @@ async function get_quote(user, stock_symbol) {
     let base_inc = base_p * 0.35;
 
     // Calculate the final price of the quote based on the base value, increment, and sine value
-    let p = (base_p + (base_inc * gauss_val)).toFixed(2);
+    let p = 0;
+    p = (base_p + (base_inc * gauss_val)).toFixed(2);;
     p = parseFloat(p);
 
     // If the final price is less than 0, set it to 0.01
