@@ -1,8 +1,6 @@
-// const fetch = require('node-fetch');
 const { get_quote } = require("../quote-server/quote_server");
 const User = require('../server/db/models/user');
 const Buy = require('../server/db/models/buy');
-//const { mongoose } = require('../server/db/conn');
 const { create_transaction } = require('../server/db/db_functions/transaction_functions');
 const { create_buy_trigger } = require('../server/db/db_functions/buy_trigger_functions');
 const BuyTrigger = require("../server/db/models/buy_trigger");
@@ -28,7 +26,7 @@ async function buy(user, stock_symbol, amount) {
         // If the stock symbol is not in Redis, fetch the quote object from the quote server
         quote = await get_quote(user, stock_symbol);
         // Add the stock symbol and its quote object to Redis with a TTL of 4 minutes (240 seconds)
-        await redis_client.setex(stock_symbol, 240, JSON.stringify(quote.quote_price));
+        await redis_client.setex(stock_symbol, 240, JSON.stringify(quote));
     } else {
         // If the stock symbol is in Redis, parse the quote object from a string into a JavaScript object
         quote = JSON.parse(quote);
@@ -37,7 +35,7 @@ async function buy(user, stock_symbol, amount) {
     //console.log(quote)
 
     let stock_quantity = amount / Number(quote.quote_price); // Calculates total quantity of stocks to buy
-
+    
     const request = {
         type: 'BUY',
         user: user,

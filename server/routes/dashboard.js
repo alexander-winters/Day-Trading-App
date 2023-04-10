@@ -58,6 +58,9 @@ dashboardRoutes.route('/dashboard').post(async (req, res, next) => {
             case 'commit_buy':
                 result = await commit_buy(user);
                 break;
+            case 'cancel_buy':
+                result = await cancel_buy(user);
+                break;
             case 'sell':
                 result = await sell(user, stock_symbol, amount);
                 break;
@@ -87,8 +90,7 @@ dashboardRoutes.route('/dashboard').post(async (req, res, next) => {
                 break;
             case 'dumplog':
                 await dumplog(user);
-                result = res.json({ message: "Dumplog Complete" });
-                break;
+                return res.json({ message: "Dumplog Complete"})
             case 'display_summary':
                 result = await display_summary(user);
                 break;
