@@ -1,11 +1,8 @@
 import time
 import json
 import sys
-import os
-import requests
-from requests.sessions import Session
-from threading import local
-from concurrent.futures import ThreadPoolExecutor
+import asyncio
+import httpx
 import statistics
 
 URL = 'http://localhost:80/dashboard'
@@ -15,7 +12,7 @@ cmds = ['ADD', 'QUOTE', 'BUY', 'COMMIT_BUY', 'CANCEL_BUY', 'SELL', 'COMMIT_SELL'
 request_times = {cmd: [] for cmd in cmds}
 response_times = {cmd: [] for cmd in cmds}
 
-def send_request(transaction_id, params, session):
+async def send_request(transaction_id, params, session):
     cmd = params[0]
     args = params[1:]
 
@@ -34,9 +31,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
 
@@ -54,9 +55,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
     
@@ -74,9 +79,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
         
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
     
@@ -92,9 +101,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
     
@@ -110,9 +123,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
     
@@ -130,9 +147,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
     
@@ -148,9 +169,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
     
@@ -166,9 +191,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
     
@@ -187,9 +216,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
         
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
 
@@ -207,9 +240,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
 
@@ -228,9 +265,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
 
@@ -249,9 +290,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
 
@@ -270,9 +315,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
 
@@ -290,9 +339,13 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
 
@@ -310,9 +363,13 @@ def send_request(transaction_id, params, session):
             'filename': filename
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
 
@@ -329,9 +386,13 @@ def send_request(transaction_id, params, session):
             'filename': filename
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
      
@@ -348,37 +409,30 @@ def send_request(transaction_id, params, session):
             'filename': None
         }
 
-        r = session.post(URL, json=body)
-        request_times[cmd].append(time.perf_counter() - request_start)
-        request_sent = time.perf_counter()
+        try:
+            r = await session.post(URL, json=body, timeout=5.0)  # Set a custom timeout here, e.g., 5 seconds
+            request_times[cmd].append(time.perf_counter() - request_start)
+            request_sent = time.perf_counter()
+        except httpx.ReadTimeout:
+            print(f"Request for transaction {transaction_id} timed out. Retrying...")
+            return await send_request(transaction_id, params, session)
         if r:
             response_times[cmd].append(request_sent - request_start)
 
 
-def create_session(local_session) -> Session:
-    if not hasattr(local_session, 'session'):
-            local_session.session = Session()
-    return local_session.session
-
-
-def process_commands(transactions, max_workers):
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Use a local session object for each thread to prevent collisions
-        # when accessing the API concurrently
-        local_session = local()
-        # Create a session with a connection pool to reuse TCP connections
-        session = create_session(local_session)
-        adapter = requests.adapters.HTTPAdapter(pool_connections=45, pool_maxsize=45)
-        session.mount('http://', adapter)
-        
+async def process_commands(transactions):
+    async with httpx.AsyncClient() as session:
+        tasks = []
         for transaction in transactions:
             print(transaction)
             transaction_id, params = transaction
-            
-            future = executor.submit(send_request, transaction_id, params, session)
-            future.result()
+            task = asyncio.ensure_future(send_request(transaction_id, params, session))
+            tasks.append(task)
 
-def main():
+        await asyncio.gather(*tasks)
+
+
+async def main():
     if len(sys.argv) > 1:
         filename = sys.argv[1]
     else:
@@ -393,10 +447,9 @@ def main():
             params = params.split(',')
             transactions.append((transaction_id, params))
 
-    max_workers = os.cpu_count()
 
     start = time.perf_counter()
-    process_commands(transactions, max_workers)
+    await process_commands(transactions)
     elapsed = time.perf_counter() - start
     print(f"Elapsed time: {elapsed:0.2f} seconds")
 
@@ -412,4 +465,4 @@ def main():
     }
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
