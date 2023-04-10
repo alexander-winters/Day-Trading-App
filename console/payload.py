@@ -6,12 +6,20 @@ import requests
 from requests.sessions import Session
 from threading import local
 from concurrent.futures import ThreadPoolExecutor
+import statistics
 
 URL = 'http://localhost:80/dashboard'
+cmds = ['ADD', 'QUOTE', 'BUY', 'COMMIT_BUY', 'CANCEL_BUY', 'SELL', 'COMMIT_SELL', 'CANCEL_SELL', 'SET_BUY_AMOUNT',
+        'CANCEL_SET_BUY', 'SET_BUY_TRIGGER', 'SET_SELL_AMOUNT', 'SET_SELL_TRIGGER', 'CANCEL_SET_SELL', 'DUMPLOG', 'DISPLAY_SUMMARY']
+
+request_times = {cmd: [] for cmd in cmds}
+response_times = {cmd: [] for cmd in cmds}
 
 def send_request(transaction_id, params, session):
     cmd = params[0]
     args = params[1:]
+
+    request_start = time.perf_counter()
 
     if cmd == 'ADD':
         userid = args[0]
@@ -27,6 +35,10 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
+
     
     elif cmd == 'QUOTE':
         userid = args[0]
@@ -42,6 +54,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
     
     elif cmd == 'BUY':
         userid = args[0]
@@ -58,6 +73,9 @@ def send_request(transaction_id, params, session):
         }
         
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
     
     elif cmd == 'COMMIT_BUY':
         userid = args[0]
@@ -72,6 +90,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
     
     elif cmd == 'CANCEL_BUY':
         userid = args[0]
@@ -86,6 +107,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
     
     elif cmd == 'SELL':
         userid = args[0]
@@ -100,7 +124,11 @@ def send_request(transaction_id, params, session):
             'amount': float(amount),
             'filename': None
         }
+
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
     
     elif cmd == 'COMMIT_SELL':
         userid = args[0]
@@ -115,6 +143,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
     
     elif cmd == 'CANCEL_SELL':
         userid = args[0]
@@ -129,6 +160,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
     
     elif cmd == 'SET_BUY_AMOUNT':
 
@@ -146,6 +180,9 @@ def send_request(transaction_id, params, session):
         }
         
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
 
     elif cmd == 'CANCEL_SET_BUY':
 
@@ -162,6 +199,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
 
     elif cmd == 'SET_BUY_TRIGGER':
 
@@ -179,6 +219,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
 
     elif cmd == 'SET_SELL_AMOUNT':
 
@@ -196,6 +239,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
 
     elif cmd == 'SET_SELL_TRIGGER':
 
@@ -213,6 +259,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
 
     elif cmd == 'CANCEL_SET_SELL':
 
@@ -229,6 +278,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
 
     elif cmd == 'DUMPLOG' and len(args) > 1:
 
@@ -244,7 +296,10 @@ def send_request(transaction_id, params, session):
             'filename': filename
         }
 
-        r = session.post(URL, json=body) 
+        r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
 
     elif cmd == 'DUMPLOG':
 
@@ -260,6 +315,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
      
     elif cmd == 'DISPLAY_SUMMARY':
 
@@ -275,6 +333,9 @@ def send_request(transaction_id, params, session):
         }
 
         r = session.post(URL, json=body)
+        request_times[cmd].append(time.perf_counter() - request_start)
+        if r:
+            response_times[cmd].append(time.perf_counter() - request_start)
 
 
 def create_session(local_session) -> Session:
@@ -321,6 +382,12 @@ def main():
     process_commands(transactions, max_workers)
     elapsed = time.perf_counter() - start
     print(f"Elapsed time: {elapsed:0.2f} seconds")
+
+    for cmd in cmds:
+        if request_times[cmd]:
+            print(f"Avg Req Time for {cmd}: {statistics.fmean(request_times[cmd])}")
+        if response_times[cmd]:
+            print(f"Avg Res Time for {cmd}: {statistics.fmean(response_times[cmd])}")
 
     return {
         'statusCode': 200,
