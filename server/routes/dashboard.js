@@ -28,7 +28,6 @@ const dashboardRoutes = express.Router();
 
 let previous_stock_symbol = '';
 
-// 'http://localhost:5000/dashboard?type=quote&user=john&stock_symbol=ABC'
 dashboardRoutes.route('/dashboard').post(async (req, res) => {
     const { type, // Command 
             user, // user_id
@@ -38,17 +37,10 @@ dashboardRoutes.route('/dashboard').post(async (req, res) => {
             filename, // Specify dumplog filename
     } = req.body;
 
-    // Implement checking if the previous symbol is equal to the requesting symbol
-    // This will improve performance
     
     console.log( `Type: ${type}, User: ${user}, Symbol: ${stock_symbol}, Amount: ${amount}, Filename: ${filename}`);
     if (type === 'add') {
         try {
-            // Need to get the current balance from db for user
-            // let user_currrent_balance = 0;
-            // user_currrent_balance += amount;
-            // res.json(user_currrent_balance);
-
             const user_add = await add(user, amount);
             res.json(user_add);
             //res.json({myValue: 3456});
