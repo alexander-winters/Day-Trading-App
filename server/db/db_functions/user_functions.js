@@ -17,7 +17,7 @@ async function create_user(username) {
         await create_sell_account(username);
 
         // Return the newly created user
-        console.log(new_user);
+        // console.log(new_user);
         return new_user;
 
     } catch (error) {
@@ -26,7 +26,5 @@ async function create_user(username) {
         throw new Error('Error creating user');
     }
 }
-
-// create_user('elmer_test');
 
 module.exports = { create_user };

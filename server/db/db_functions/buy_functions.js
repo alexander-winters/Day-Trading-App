@@ -9,7 +9,7 @@ async function create_buy_account(username) {
         await new_buy_acc.save();
 
         // Return the newly created user
-        console.log(new_buy_acc);
+        // console.log(new_buy_acc);
         return new_buy_acc;
 
     } catch (error) {

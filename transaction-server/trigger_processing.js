@@ -5,35 +5,29 @@ const BuyTrigger = require('../server/db/models/buy_trigger');
 const SellTrigger = require('../server/db/models/sell_trigger');
 const { get_quote } = require("../quote-server/quote_server");
 
-//require("dotenv").config({ path: "../server/config.env" });
-const connectDB = require('../server/db/conn');
-
 const TRIGGER_PROCESS_INTERVAL_MS = 30000; // 30 seconds (in milliseconds)
 
 let trigger_timer;
 
-// Connect to MongoDB
-connectDB();
-
 function start_trigger_timer() {
-    console.log(`Started a ${TRIGGER_PROCESS_INTERVAL_MS}ms timer to process buy and sell triggers.`);
+    // console.log(`Started a ${TRIGGER_PROCESS_INTERVAL_MS}ms timer to process buy and sell triggers.`);
     trigger_timer = setInterval(process_triggers, TRIGGER_PROCESS_INTERVAL_MS);
 }
 
 function stop_trigger_timer() {
     clearInterval(trigger_timer);
-    console.log('Stopped trigger processing timer.');
+    // console.log('Stopped trigger processing timer.');
 }
 
 async function process_triggers() {
     const time = new Date(Date.now());
-    console.log('Processing triggers - Time: ' + time.toISOString());
+    // console.log('Processing triggers - Time: ' + time.toISOString());
 
     await manage_buy_triggers();
     await manage_sell_triggers();
 
     const time_end = new Date(Date.now());
-    console.log('Finished processing triggers - End Time: ' + time_end.toISOString());
+    // console.log('Finished processing triggers - End Time: ' + time_end.toISOString());
 }
 
 async function manage_buy_triggers() {
@@ -51,7 +45,7 @@ async function manage_buy_triggers() {
         for (const trigger of buy_acc.buy_triggers) {
 
             const quote_price = await get_quote(buy_acc.username, trigger.stock_symbol);
-            console.log(`While processing Buy trigger ${trigger.stock_symbol} for user ${buy_acc.username}, quote price is ${quote_price.quote_price}.`);
+            // console.log(`While processing Buy trigger ${trigger.stock_symbol} for user ${buy_acc.username}, quote price is ${quote_price.quote_price}.`);
             
             if (quote_price.quote_price === trigger.buy_price) {
 
@@ -68,7 +62,7 @@ async function manage_buy_triggers() {
 
                 await user_acc.save();
 
-                console.log(`BUY TRIGGER PROCESS: User ${user_acc.username} bought amount ${trigger.amount} of ${trigger.stock_symbol} at price point ${trigger.buy_price}.`);
+                // console.log(`BUY TRIGGER PROCESS: User ${user_acc.username} bought amount ${trigger.amount} of ${trigger.stock_symbol} at price point ${trigger.buy_price}.`);
 
                 // Flag to delete trigger in the current user buy account
                 user_deletion_list.push(trigger);
@@ -112,15 +106,18 @@ async function manage_sell_triggers() {
     // For all sell accounts in the trigger watch list
     for (const user_triggers of all_sell_trigger_watchers) {
         const sell_acc = await Sell.findOne({ username: user_triggers.username });
+
+        // Fetch the user object using the username
+        const user = await User.findOne({ username: user_triggers.username });
         
         let user_deletion_list = [];
 
         // For all sell triggers in the sell account
         for (const trigger of sell_acc.sell_triggers) {
 
-            const quote_price = await get_quote(sell_acc.username, trigger.stock_symbol);
+            const quote_price = await get_quote(user, trigger.stock_symbol);
 
-            console.log(`While processing Sell trigger ${trigger.stock_symbol} for user ${sell_acc.username}, quote price is ${quote_price.quote_price}.`);
+            // console.log(`While processing Sell trigger ${trigger.stock_symbol} for user ${sell_acc.username}, quote price is ${quote_price.quote_price}.`);
 
             if (quote_price.quote_price === trigger.sell_price) {
 
@@ -130,7 +127,7 @@ async function manage_sell_triggers() {
 
                 await user_acc.save();
 
-                console.log(`SELL TRIGGER PROCESS: User ${user_acc.username} sold ${trigger.stock_symbol} and added $${trigger.amount} to account funds`);
+                // console.log(`SELL TRIGGER PROCESS: User ${user_acc.username} sold ${trigger.stock_symbol} and added $${trigger.amount} to account funds`);
                 
                 // Flag to delete trigger in the current user sell account
                 user_deletion_list.push(trigger);

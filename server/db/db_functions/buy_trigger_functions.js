@@ -14,7 +14,7 @@ async function create_buy_trigger(username) {
         await new_buy_trigger.save();
 
         // Return the newly created user
-        console.log('NEW BUY TRIGGER WATCHER:\n' + new_buy_trigger);
+        // console.log('NEW BUY TRIGGER WATCHER:\n' + new_buy_trigger);
         return new_buy_trigger;
 
     } catch (error) {

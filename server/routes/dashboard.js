@@ -33,9 +33,6 @@ dashboardRoutes.route('/dashboard').post(async (req, res, next) => {
             amount, // Amount to add, buy, or sell.
             filename, // Specify dumplog filename
     } = req.body;
-
-    
-    console.log( `Type: ${type}, User: ${user}, Symbol: ${stock_symbol}, Amount: ${amount}, Filename: ${filename}`);
     
     try {
         let result;
