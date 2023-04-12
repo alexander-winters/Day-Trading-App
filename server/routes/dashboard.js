@@ -83,7 +83,7 @@ dashboardRoutes.route('/dashboard').post(async (req, res, next) => {
                 result = await set_sell_trigger(user, stock_symbol, amount);
                 break;
             case 'cancel_set_sell':
-                result = await cancel_set_sell(user, stock_symbol, amount);
+                result = await cancel_set_sell(user, stock_symbol);
                 break;
             case 'dumplog':
                 await dumplog(user);
