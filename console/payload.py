@@ -427,11 +427,6 @@ def group_transactions_by_user(transactions):
     for transaction_id, params in transactions:
         user = params[1]
         user_transactions[user].append((transaction_id, params))
-
-    # Sort the transactions for each user based on the transaction_id
-    for user in user_transactions:
-        user_transactions[user] = sorted(user_transactions[user], key=lambda x: int(x[0]))
-
     return user_transactions
 
 
