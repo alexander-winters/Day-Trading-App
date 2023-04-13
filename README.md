@@ -15,9 +15,12 @@ $ cd console
 ~~~
 4. Run the python script and pass the desired payload. For example
 ~~~
-$ py payload.py payloads/user1.txt
+$ python3 payload.py payloads/user1.txt
 ~~~
-
+6. Generate the dumplog by running:
+~~~
+$ python3 payload.py payloads/dumplog.txt
+~~~
 ## Client 
 To open the client <br>
 1. Ensure the containers are up and running
