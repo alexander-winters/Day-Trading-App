@@ -9,7 +9,7 @@ async function create_sell_account(username) {
         await new_sell_acc.save();
 
         // Return the newly created user
-        console.log(new_sell_acc);
+        // console.log(new_sell_acc);
         return new_sell_acc;
 
     } catch (error) {

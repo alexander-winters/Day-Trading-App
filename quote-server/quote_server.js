@@ -7,7 +7,7 @@ async function get_quote(user, stock_symbol) {
     await new Promise(resolve => setTimeout(resolve, 0));
 
     // Extract the first 3 characters of the symbol
-    let sym = stock_symbol.substring(0,3);
+    sym = stock_symbol.substring(0,3);
 
     // Generate a random value from a Gaussian distribution
     const mu = 0; // mean
@@ -16,7 +16,7 @@ async function get_quote(user, stock_symbol) {
     const gauss_val = distribution.ppf(Math.random());
 
     // Calculate a base value for the quote based on the symbol
-    let base_p = 0;
+    base_p = 0;
     for (let i = 0; i < sym.length; i++) base_p = base_p + sym.charCodeAt(0);
     base_p = ((base_p % 250) + (base_p * 0.03)).toFixed(2);;
     base_p = parseFloat(base_p);
@@ -25,10 +25,11 @@ async function get_quote(user, stock_symbol) {
     if (base_p == 0) base_p = 49.49;
 
     // Calculate the increment for the quote based on the base value
-    let base_inc = base_p * 0.35;
+    base_inc = base_p * 0.35;
 
     // Calculate the final price of the quote based on the base value, increment, and sine value
-    let p = (base_p + (base_inc * gauss_val)).toFixed(2);
+    p = 0;
+    p = (base_p + (base_inc * gauss_val)).toFixed(2);;
     p = parseFloat(p);
 
     // If the final price is less than 0, set it to 0.01

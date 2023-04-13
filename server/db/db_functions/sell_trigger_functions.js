@@ -14,7 +14,7 @@ async function create_sell_trigger(username) {
         await new_sell_trigger.save();
 
         // Return the newly created user
-        console.log('NEW SELL TRIGGER WATCHER:\n' + new_sell_trigger);
+        // console.log('NEW SELL TRIGGER WATCHER:\n' + new_sell_trigger);
         return new_sell_trigger;
 
     } catch (error) {

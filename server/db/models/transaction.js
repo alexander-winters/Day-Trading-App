@@ -12,7 +12,7 @@ const transaction_schema = new mongoose.Schema( {
         type: String,
         ref: 'User',
         unique: false,
-        required: true
+        required: true,
     },
     transaction_id: {
         type: Number,
@@ -66,6 +66,8 @@ const transaction_schema = new mongoose.Schema( {
     }
 });
 
+transaction_schema.index({ username: 1, transaction_timestamp: 1 });
+
 transaction_schema.pre('save', async function(next) {
     let transaction = this;
     if (!transaction.transaction_id) {
@@ -99,5 +101,8 @@ async function generate_transaction_id() {
 }
 
 const Transaction = mongoose.model('Transaction', transaction_schema);
+
+// Ensure indexes are created when the application starts
+Transaction.createIndexes();
 
 module.exports = Transaction;
