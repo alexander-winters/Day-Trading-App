@@ -8,6 +8,8 @@ RUN npm i
 
 COPY . .
 
+RUN npm run build
+
 # Expose the port mentioned in vite.config
 EXPOSE 5173
 

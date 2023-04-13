@@ -13,7 +13,8 @@
     "@heroicons/react": "^2.0.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.2"
+    "react-router-dom": "^6.8.2",
+    "reactjs-popup": "^2.0.5"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
