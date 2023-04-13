@@ -7,10 +7,6 @@ const Modal = () => {
    const [password, setPassword] = useState('');
    const [confirmPass, setConfirmPass] = useState('');
 
-   const handleSubmit = (e) => {
-      e.preventDefault();
-      console.log(email);
-   }
   return (
     <Popup
     trigger={<button className="create-account-btn text-sm underline"> Create an Account </button>}
@@ -24,7 +20,7 @@ const Modal = () => {
             </button>
          
             <h1 className='text-xl text-center pb-8 pt-4 font-bold'>Create an Account</h1>
-            <form onSubmit={handleSubmit} className='login-form'>
+            <form action='http://localhost:5173/dashboard' type='submit' className='login-form'>
                <div className="flex flex-col mb-4 px-2">
                   <label htmlFor="name" className='text-sm '>Full Name</label>
                   <input value={name} onChange={(e)=> setName(e.target.value)} id="name" className='text-sm border border-white border-b-gray-400'/>

@@ -5,14 +5,10 @@ const Login = () => {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
 
-   const handleSubmit = (e) => {
-      e.preventDefault();
-      console.log(email);
-   }
   return (
     <div className='auth-form-container bg-white py-40'>
       <h1 className='text-3xl text-center pb-20'>Welcome to Day Trading App</h1>
-      <form onSubmit={handleSubmit} className='login-form'>
+      <form action='http://localhost:5173/dashboard' type='submit' className='login-form'>
         <div className="flex flex-col mb-4 px-36">
           <label htmlFor="email" className='text-sm '>Username or Email</label>
           <input type='email' value={email} onChange={(e)=> setEmail(e.target.value)} id="email" className='text-sm border border-white border-b-gray-400'/>
